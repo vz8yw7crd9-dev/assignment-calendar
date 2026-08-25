@@ -1,6 +1,28 @@
 // ============================================================
 // MY ASSIGNMENT CALENDAR
+// CLOUD SYNC VERSION
 // ============================================================
+
+
+// ============================================================
+// SUPABASE CONNECTION
+// ============================================================
+//
+// PASTE YOUR VALUES INSIDE THE QUOTATION MARKS.
+//
+// Example:
+//
+// const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
+// const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
+//
+// NEVER put your Supabase password or secret key here.
+// ============================================================
+
+const SUPABASE_URL =
+    "https://upzwzjrvqjlniltkofix.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_cJeN04pzwNUf_fCFN9WtCA_wm7qwjAM";
 
 
 // ============================================================
@@ -79,6 +101,16 @@ let editingAssignmentId = null;
 
 let currentCategoryFilter = "all";
 
+let supabaseClient = null;
+
+let currentUser = null;
+
+let cloudReady = false;
+
+let cloudSyncTimer = null;
+
+let isLoadingCloudData = false;
+
 
 // ============================================================
 // DOM
@@ -116,7 +148,7 @@ const categoryFilter =
 
 
 // ============================================================
-// STORAGE FUNCTIONS
+// LOCAL STORAGE
 // ============================================================
 
 function loadAssignments() {
@@ -175,6 +207,7 @@ function loadAssignments() {
                 showInTodo:
                     item.showInTodo !== false
             };
+
         });
 
     } catch (error) {
@@ -195,6 +228,8 @@ function saveAssignments() {
         ASSIGNMENT_STORAGE_KEY,
         JSON.stringify(assignments)
     );
+
+    scheduleCloudSync();
 }
 
 
@@ -247,6 +282,8 @@ function saveCategories() {
         CATEGORY_STORAGE_KEY,
         JSON.stringify(categories)
     );
+
+    scheduleCloudSync();
 }
 
 
@@ -283,6 +320,868 @@ function saveGeneralTodos() {
         GENERAL_TODO_STORAGE_KEY,
         JSON.stringify(generalTodos)
     );
+
+    scheduleCloudSync();
+}
+
+
+// ============================================================
+// SUPABASE LOADER
+// ============================================================
+
+function loadSupabaseLibrary() {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            if (
+                window.supabase &&
+                window.supabase.createClient
+            ) {
+
+                resolve();
+
+                return;
+            }
+
+
+            const script =
+                document.createElement(
+                    "script"
+                );
+
+            script.src =
+                "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
+            script.onload =
+                () => resolve();
+
+            script.onerror =
+                () => reject(
+                    new Error(
+                        "Could not load Supabase."
+                    )
+                );
+
+            document.head.appendChild(
+                script
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// SUPABASE INITIALIZATION
+// ============================================================
+
+async function initializeCloud() {
+
+    if (
+        SUPABASE_URL.includes(
+            "PASTE YOUR"
+        ) ||
+        SUPABASE_KEY.includes(
+            "PASTE YOUR"
+        )
+    ) {
+
+        showCloudStatus(
+            "Local mode"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        await loadSupabaseLibrary();
+
+
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY,
+                {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
+                    }
+                }
+            );
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Could not get session:",
+                error
+            );
+
+            showLogin();
+
+            return;
+        }
+
+
+        currentUser =
+            data.session
+                ? data.session.user
+                : null;
+
+
+        if (currentUser) {
+
+            await loadCloudData();
+
+        } else {
+
+            showLogin();
+        }
+
+
+        supabaseClient.auth.onAuthStateChange(
+            async (
+                event,
+                session
+            ) => {
+
+                currentUser =
+                    session
+                        ? session.user
+                        : null;
+
+
+                if (
+                    currentUser
+                ) {
+
+                    hideLogin();
+
+                    await loadCloudData();
+
+                } else {
+
+                    showLogin();
+                }
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Supabase initialization error:",
+            error
+        );
+
+        showCloudStatus(
+            "Offline"
+        );
+    }
+}
+
+
+// ============================================================
+// CLOUD LOGIN UI
+// ============================================================
+
+function createLoginUI() {
+
+    if (
+        document.getElementById(
+            "cloudLoginModal"
+        )
+    ) {
+        return;
+    }
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+    modal.id =
+        "cloudLoginModal";
+
+
+    modal.innerHTML = `
+
+        <div class="cloud-login-backdrop">
+
+            <div class="cloud-login-card">
+
+                <div class="cloud-login-icon">
+                    ☁️
+                </div>
+
+                <h2>My Assignment Calendar</h2>
+
+                <p>
+                    Sign in to sync your calendar
+                    between your devices.
+                </p>
+
+                <input
+                    type="email"
+                    id="cloudEmail"
+                    placeholder="Email"
+                    autocomplete="email"
+                >
+
+                <input
+                    type="password"
+                    id="cloudPassword"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                >
+
+                <button id="cloudLoginButton">
+                    Sign In
+                </button>
+
+                <div
+                    id="cloudLoginMessage"
+                    class="cloud-login-message"
+                ></div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.textContent = `
+
+        #cloudLoginModal {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+        }
+
+        .cloud-login-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .cloud-login-card {
+            width: min(420px, 100%);
+            background: white;
+            border-radius: 26px;
+            padding: 32px;
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        .cloud-login-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .cloud-login-card h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .cloud-login-card p {
+            color: #86868b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .cloud-login-card input {
+            width: 100%;
+            padding: 13px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #d2d2d7;
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .cloud-login-card input:focus {
+            border-color: #007aff;
+            box-shadow:
+                0 0 0 3px rgba(0,122,255,0.12);
+        }
+
+        .cloud-login-card button {
+            width: 100%;
+            border: none;
+            border-radius: 11px;
+            padding: 13px;
+            background: #007aff;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .cloud-login-card button:hover {
+            background: #0066d6;
+        }
+
+        .cloud-login-message {
+            min-height: 20px;
+            margin-top: 12px;
+            color: #ff3b30;
+            font-size: 13px;
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    document
+        .getElementById(
+            "cloudLoginButton"
+        )
+        .addEventListener(
+            "click",
+            loginToCloud
+        );
+
+
+    document
+        .getElementById(
+            "cloudPassword"
+        )
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    loginToCloud();
+                }
+            }
+        );
+
+
+    document
+        .getElementById(
+            "cloudEmail"
+        )
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    loginToCloud();
+                }
+            }
+        );
+}
+
+
+async function loginToCloud() {
+
+    const email =
+        document
+            .getElementById(
+                "cloudEmail"
+            )
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById(
+                "cloudPassword"
+            )
+            .value;
+
+
+    const message =
+        document
+            .getElementById(
+                "cloudLoginMessage"
+            );
+
+
+    if (!email || !password) {
+
+        message.textContent =
+            "Please enter your email and password.";
+
+        return;
+    }
+
+
+    const button =
+        document
+            .getElementById(
+                "cloudLoginButton"
+            );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Signing in...";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "Sign In";
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        message.textContent =
+            "We couldn't sign you in. Check your email and password.";
+
+        return;
+    }
+
+
+    currentUser =
+        data.user;
+
+    hideLogin();
+
+    await loadCloudData();
+}
+
+
+function showLogin() {
+
+    if (
+        !supabaseClient
+    ) {
+        return;
+    }
+
+
+    createLoginUI();
+
+
+    document
+        .getElementById(
+            "cloudLoginModal"
+        )
+        .style.display =
+        "block";
+}
+
+
+function hideLogin() {
+
+    const modal =
+        document.getElementById(
+            "cloudLoginModal"
+        );
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+    }
+}
+
+
+// ============================================================
+// CLOUD STATUS
+// ============================================================
+
+function showCloudStatus(
+    text
+) {
+
+    let status =
+        document.getElementById(
+            "cloudStatus"
+        );
+
+
+    if (!status) {
+
+        status =
+            document.createElement(
+                "div"
+            );
+
+        status.id =
+            "cloudStatus";
+
+
+        status.style.position =
+            "fixed";
+
+        status.style.bottom =
+            "14px";
+
+        status.style.right =
+            "14px";
+
+        status.style.zIndex =
+            "9998";
+
+        status.style.background =
+            "rgba(255,255,255,0.92)";
+
+        status.style.backdropFilter =
+            "blur(10px)";
+
+        status.style.padding =
+            "7px 11px";
+
+        status.style.borderRadius =
+            "20px";
+
+        status.style.fontSize =
+            "12px";
+
+        status.style.color =
+            "#86868b";
+
+        status.style.boxShadow =
+            "0 3px 15px rgba(0,0,0,0.08)";
+
+
+        document.body.appendChild(
+            status
+        );
+    }
+
+
+    status.textContent =
+        text;
+}
+
+
+// ============================================================
+// CLOUD DATA
+// ============================================================
+
+function getPlannerData() {
+
+    return {
+
+        assignments:
+            assignments,
+
+        categories:
+            categories,
+
+        generalTodos:
+            generalTodos
+    };
+}
+
+
+async function loadCloudData() {
+
+    if (
+        !supabaseClient ||
+        !currentUser ||
+        isLoadingCloudData
+    ) {
+        return;
+    }
+
+
+    isLoadingCloudData =
+        true;
+
+
+    showCloudStatus(
+        "☁️ Loading..."
+    );
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("calendar_data")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        if (
+            data &&
+            data.data
+        ) {
+
+            assignments =
+                Array.isArray(
+                    data.data.assignments
+                )
+                    ? data.data.assignments
+                    : [];
+
+            categories =
+                Array.isArray(
+                    data.data.categories
+                )
+                    ? data.data.categories
+                    : DEFAULT_CATEGORIES.map(
+                        category => ({
+                            ...category
+                        })
+                    );
+
+            generalTodos =
+                Array.isArray(
+                    data.data.generalTodos
+                )
+                    ? data.data.generalTodos
+                    : [];
+
+
+            saveLocalOnly();
+
+
+        } else {
+
+            // First device:
+            // upload the existing local planner.
+
+            await saveCloudData();
+
+        }
+
+
+        cloudReady =
+            true;
+
+
+        renderCategorySelect();
+
+        renderCategoryFilter();
+
+        renderTodoList();
+
+        renderGeneralTodos();
+
+        showCalendar();
+
+        updateWeekSummary();
+
+
+        showCloudStatus(
+            "☁️ Synced"
+        );
+
+
+        setTimeout(
+            () => {
+
+                showCloudStatus(
+                    "☁️ Synced"
+                );
+
+            },
+            1500
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Could not load cloud data:",
+            error
+        );
+
+        showCloudStatus(
+            "⚠️ Offline — using saved data"
+        );
+
+    } finally {
+
+        isLoadingCloudData =
+            false;
+    }
+}
+
+
+function saveLocalOnly() {
+
+    localStorage.setItem(
+        ASSIGNMENT_STORAGE_KEY,
+        JSON.stringify(assignments)
+    );
+
+    localStorage.setItem(
+        CATEGORY_STORAGE_KEY,
+        JSON.stringify(categories)
+    );
+
+    localStorage.setItem(
+        GENERAL_TODO_STORAGE_KEY,
+        JSON.stringify(generalTodos)
+    );
+}
+
+
+function scheduleCloudSync() {
+
+    if (
+        !currentUser ||
+        !cloudReady ||
+        isLoadingCloudData
+    ) {
+        return;
+    }
+
+
+    clearTimeout(
+        cloudSyncTimer
+    );
+
+
+    showCloudStatus(
+        "☁️ Saving..."
+    );
+
+
+    cloudSyncTimer =
+        setTimeout(
+            () => {
+
+                saveCloudData();
+
+            },
+            500
+        );
+}
+
+
+async function saveCloudData() {
+
+    if (
+        !supabaseClient ||
+        !currentUser
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("calendar_data")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
+
+                    data:
+                        getPlannerData(),
+
+                    updated_at:
+                        new Date().toISOString()
+
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        cloudReady =
+            true;
+
+
+        showCloudStatus(
+            "☁️ Saved"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Cloud save failed:",
+            error
+        );
+
+
+        showCloudStatus(
+            "⚠️ Saved locally"
+        );
+    }
 }
 
 
@@ -313,7 +1212,9 @@ function getTodayKey() {
 }
 
 
-function getWeekStart(date) {
+function getWeekStart(
+    date
+) {
 
     const result =
         new Date(date);
@@ -336,7 +1237,9 @@ function getWeekStart(date) {
 }
 
 
-function getWeekEnd(date) {
+function getWeekEnd(
+    date
+) {
 
     const result =
         getWeekStart(date);
@@ -452,29 +1355,42 @@ function renderCategorySelect() {
 
     categorySelect.innerHTML = "";
 
-    const none =
-        document.createElement("option");
 
-    none.value = "";
+    const none =
+        document.createElement(
+            "option"
+        );
+
+    none.value =
+        "";
 
     none.textContent =
         "⚪ No Category";
 
-    categorySelect.appendChild(none);
+    categorySelect.appendChild(
+        none
+    );
 
-    categories.forEach(category => {
 
-        const option =
-            document.createElement("option");
+    categories.forEach(
+        category => {
 
-        option.value =
-            category.id;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.textContent =
-            category.name;
+            option.value =
+                category.id;
 
-        categorySelect.appendChild(option);
-    });
+            option.textContent =
+                category.name;
+
+            categorySelect.appendChild(
+                option
+            );
+        }
+    );
 }
 
 
@@ -482,29 +1398,43 @@ function renderCategoryFilter() {
 
     categoryFilter.innerHTML = "";
 
-    const all =
-        document.createElement("option");
 
-    all.value = "all";
+    const all =
+        document.createElement(
+            "option"
+        );
+
+    all.value =
+        "all";
 
     all.textContent =
         "All Categories";
 
-    categoryFilter.appendChild(all);
+    categoryFilter.appendChild(
+        all
+    );
 
-    categories.forEach(category => {
 
-        const option =
-            document.createElement("option");
+    categories.forEach(
+        category => {
 
-        option.value =
-            category.id;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.textContent =
-            category.name;
+            option.value =
+                category.id;
 
-        categoryFilter.appendChild(option);
-    });
+            option.textContent =
+                category.name;
+
+            categoryFilter.appendChild(
+                option
+            );
+        }
+    );
+
 
     categoryFilter.value =
         currentCategoryFilter;
@@ -523,6 +1453,7 @@ function showCalendar() {
     const month =
         currentDate.getMonth();
 
+
     const firstDay =
         new Date(
             year,
@@ -530,12 +1461,14 @@ function showCalendar() {
             1
         ).getDay();
 
+
     const daysInMonth =
         new Date(
             year,
             month + 1,
             0
         ).getDate();
+
 
     const monthNames = [
 
@@ -554,10 +1487,14 @@ function showCalendar() {
 
     ];
 
+
     monthName.textContent =
         `${monthNames[month]} ${year}`;
 
-    calendar.innerHTML = "";
+
+    calendar.innerHTML =
+        "";
+
 
     for (
         let i = 0;
@@ -566,7 +1503,9 @@ function showCalendar() {
     ) {
 
         const emptyDay =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         emptyDay.className =
             "empty-day";
@@ -594,8 +1533,11 @@ function showCalendar() {
                 day
             );
 
+
         const dayBox =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dayBox.className =
             "day";
@@ -625,13 +1567,16 @@ function showCalendar() {
 
 
         const dayNumber =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dayNumber.className =
             "day-number";
 
         dayNumber.textContent =
             day;
+
 
         dayBox.appendChild(
             dayNumber
@@ -649,17 +1594,21 @@ function showCalendar() {
                         return false;
                     }
 
+
                     if (
                         currentCategoryFilter ===
                         "all"
                     ) {
+
                         return true;
                     }
+
 
                     return (
                         assignment.category ===
                         currentCategoryFilter
                     );
+
                 }
             );
 
@@ -668,7 +1617,9 @@ function showCalendar() {
             assignment => {
 
                 const element =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
                 element.className =
                     "assignment";
@@ -758,7 +1709,7 @@ function showCalendar() {
 
 
 // ============================================================
-// OPEN ASSIGNMENT MODAL
+// ASSIGNMENT MODAL
 // ============================================================
 
 function openAssignmentModal(
@@ -812,6 +1763,7 @@ function openAssignmentModal(
                     item.id ===
                     assignmentId
             );
+
 
         if (!assignment) {
             return;
@@ -896,7 +1848,7 @@ function openAssignmentModal(
 
 
 // ============================================================
-// RENDER MODAL CATEGORIES
+// MODAL CATEGORIES
 // ============================================================
 
 function renderAssignmentCategorySelect() {
@@ -906,13 +1858,18 @@ function renderAssignmentCategorySelect() {
             "assignmentCategory"
         );
 
-    select.innerHTML = "";
+
+    select.innerHTML =
+        "";
 
 
     const none =
-        document.createElement("option");
+        document.createElement(
+            "option"
+        );
 
-    none.value = "";
+    none.value =
+        "";
 
     none.textContent =
         "No Category";
@@ -926,7 +1883,9 @@ function renderAssignmentCategorySelect() {
         category => {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
             option.value =
                 category.id;
@@ -1072,7 +2031,6 @@ function saveAssignmentFromModal() {
 
     closeAssignmentModal();
 
-
     renderTodoList();
 
     showCalendar();
@@ -1166,7 +2124,8 @@ function closeAssignmentModal() {
 
 function renderTodoList() {
 
-    todoItems.innerHTML = "";
+    todoItems.innerHTML =
+        "";
 
 
     const activeAssignments =
@@ -1177,6 +2136,7 @@ function renderTodoList() {
                     !assignment.completed &&
                     assignment.showInTodo !== false
                 );
+
             }
         );
 
@@ -1204,7 +2164,9 @@ function renderTodoList() {
         assignment => {
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             item.className =
                 "todo-item";
@@ -1222,7 +2184,9 @@ function renderTodoList() {
 
 
             const dot =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             dot.className =
                 "category-dot";
@@ -1246,7 +2210,9 @@ function renderTodoList() {
 
 
             const checkbox =
-                document.createElement("input");
+                document.createElement(
+                    "input"
+                );
 
             checkbox.type =
                 "checkbox";
@@ -1280,7 +2246,9 @@ function renderTodoList() {
 
 
             const text =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
             text.textContent =
                 assignment.title ||
@@ -1288,7 +2256,9 @@ function renderTodoList() {
 
 
             const deleteButton =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
             deleteButton.className =
                 "delete-todo";
@@ -1321,15 +2291,26 @@ function renderTodoList() {
             );
 
 
-            item.appendChild(dot);
+            item.appendChild(
+                dot
+            );
 
-            item.appendChild(checkbox);
+            item.appendChild(
+                checkbox
+            );
 
-            item.appendChild(text);
+            item.appendChild(
+                text
+            );
 
-            item.appendChild(deleteButton);
+            item.appendChild(
+                deleteButton
+            );
 
-            todoItems.appendChild(item);
+
+            todoItems.appendChild(
+                item
+            );
         }
     );
 }
@@ -1445,7 +2426,8 @@ function addGeneralTodo() {
 
 function renderGeneralTodos() {
 
-    generalTodoItems.innerHTML = "";
+    generalTodoItems.innerHTML =
+        "";
 
 
     const active =
@@ -1478,14 +2460,18 @@ function renderGeneralTodos() {
         todo => {
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             item.className =
                 "todo-item";
 
 
             const checkbox =
-                document.createElement("input");
+                document.createElement(
+                    "input"
+                );
 
             checkbox.type =
                 "checkbox";
@@ -1515,14 +2501,18 @@ function renderGeneralTodos() {
 
 
             const text =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
             text.textContent =
                 todo.text;
 
 
             const deleteButton =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
             deleteButton.className =
                 "delete-todo";
@@ -1702,7 +2692,8 @@ function renderCategoryManager() {
         );
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+        "";
 
 
     if (
@@ -1720,14 +2711,18 @@ function renderCategoryManager() {
         category => {
 
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             row.className =
                 "category-row";
 
 
             const color =
-                document.createElement("input");
+                document.createElement(
+                    "input"
+                );
 
             color.type =
                 "color";
@@ -1740,7 +2735,9 @@ function renderCategoryManager() {
 
 
             const name =
-                document.createElement("input");
+                document.createElement(
+                    "input"
+                );
 
             name.type =
                 "text";
@@ -1756,7 +2753,9 @@ function renderCategoryManager() {
 
 
             const preview =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             preview.className =
                 "category-color-preview";
@@ -1766,7 +2765,9 @@ function renderCategoryManager() {
 
 
             const deleteButton =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
             deleteButton.className =
                 "delete-category";
@@ -1805,6 +2806,7 @@ function renderCategoryManager() {
                     const value =
                         name.value.trim();
 
+
                     if (!value) {
 
                         name.value =
@@ -1813,8 +2815,10 @@ function renderCategoryManager() {
                         return;
                     }
 
+
                     category.name =
                         value;
+
 
                     saveCategories();
 
@@ -1884,15 +2888,25 @@ function renderCategoryManager() {
             );
 
 
-            row.appendChild(color);
+            row.appendChild(
+                color
+            );
 
-            row.appendChild(name);
+            row.appendChild(
+                name
+            );
 
-            row.appendChild(preview);
+            row.appendChild(
+                preview
+            );
 
-            row.appendChild(deleteButton);
+            row.appendChild(
+                deleteButton
+            );
 
-            list.appendChild(row);
+            list.appendChild(
+                row
+            );
         }
     );
 }
@@ -2018,7 +3032,8 @@ function renderSearchResults(
         );
 
 
-    results.innerHTML = "";
+    results.innerHTML =
+        "";
 
 
     const cleanQuery =
@@ -2045,11 +3060,13 @@ function renderSearchResults(
                         ""
                     ).toLowerCase();
 
+
                 const notes =
                     (
                         assignment.notes ||
                         ""
                     ).toLowerCase();
+
 
                 const category =
                     getCategoryName(
@@ -2081,14 +3098,18 @@ function renderSearchResults(
         assignment => {
 
             const result =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             result.className =
                 "search-result";
 
 
             const title =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             title.className =
                 "search-result-title";
@@ -2099,18 +3120,25 @@ function renderSearchResults(
 
 
             const meta =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             meta.className =
                 "search-result-meta";
+
 
             meta.textContent =
                 `${formatDate(assignment.date)} • ${getCategoryName(assignment.category)}${assignment.showInTodo === false ? " • Calendar Only" : ""}`;
 
 
-            result.appendChild(title);
+            result.appendChild(
+                title
+            );
 
-            result.appendChild(meta);
+            result.appendChild(
+                meta
+            );
 
 
             result.addEventListener(
@@ -2161,7 +3189,8 @@ function exportPlanner() {
 
     const backup = {
 
-        version: 2,
+        version:
+            2,
 
         exportedAt:
             new Date().toISOString(),
@@ -2220,7 +3249,6 @@ function exportPlanner() {
 
     link.click();
 
-
     link.remove();
 
 
@@ -2243,7 +3271,7 @@ function importPlanner(
 
 
     reader.onload =
-        event => {
+        async event => {
 
             try {
 
@@ -2303,11 +3331,7 @@ function importPlanner(
                 }
 
 
-                saveAssignments();
-
-                saveCategories();
-
-                saveGeneralTodos();
+                saveLocalOnly();
 
 
                 selectedDate =
@@ -2330,11 +3354,24 @@ function importPlanner(
                 updateWeekSummary();
 
 
+                if (
+                    currentUser
+                ) {
+
+                    await saveCloudData();
+                }
+
+
                 alert(
                     "Your planner has been restored!"
                 );
 
+
             } catch (error) {
+
+                console.error(
+                    error
+                );
 
                 alert(
                     "That file doesn't appear to be a valid planner backup."
@@ -2378,9 +3415,6 @@ function goToToday() {
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
-
-
-// Add assignment from right-side list
 
 document
     .getElementById("addTodo")
@@ -2689,7 +3723,9 @@ document
         () => {
 
             document
-                .getElementById("importFile")
+                .getElementById(
+                    "importFile"
+                )
                 .click();
         }
     );
@@ -2706,7 +3742,9 @@ document
 
             if (file) {
 
-                importPlanner(file);
+                importPlanner(
+                    file
+                );
             }
 
             event.target.value =
@@ -2810,3 +3848,9 @@ renderGeneralTodos();
 showCalendar();
 
 updateWeekSummary();
+
+
+// Start Supabase after the
+// existing planner has rendered.
+
+initializeCloud();
