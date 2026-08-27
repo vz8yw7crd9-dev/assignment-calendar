@@ -1,9 +1,7 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -13,18 +11,20 @@
 
     <title>My Assignment Calendar</title>
 
-
     <style>
 
         * {
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
 
         body {
-
-            margin: 0;
-
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -34,28 +34,30 @@
                 sans-serif;
 
             background: #f5f5f7;
-
             color: #1d1d1f;
         }
-
 
         button,
         input,
         select,
         textarea {
-
             font-family: inherit;
         }
 
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
 
         .page {
-
-            max-width: 1400px;
-
+            width: 100%;
+            max-width: 1450px;
             min-height: 100vh;
-
             margin: 0 auto;
-
             padding: 24px 30px 40px;
         }
 
@@ -65,662 +67,402 @@
         ========================= */
 
         .header {
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
-
             margin-bottom: 18px;
         }
 
-
         h1 {
-
             margin: 0;
-
             font-size: 32px;
-
             font-weight: 700;
-
             letter-spacing: -0.8px;
         }
 
-
         .header-actions {
-
             display: flex;
-
             align-items: center;
-
             gap: 8px;
-
             flex-wrap: wrap;
-
             justify-content: flex-end;
         }
 
-
         .header-button {
-
             border: none;
-
             background: white;
-
             color: #1d1d1f;
-
             padding: 10px 13px;
-
             border-radius: 11px;
-
             font-size: 13px;
-
             font-weight: 600;
-
             cursor: pointer;
-
-            box-shadow:
-                0 2px 10px
-                rgba(0, 0, 0, 0.07);
-
-            transition: 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            transition: 0.2s ease;
         }
 
-
         .header-button:hover {
-
             background: #e9e9ed;
-
             transform: translateY(-1px);
         }
 
-
         .header-button.primary {
-
             background: #007aff;
-
             color: white;
         }
 
-
         .header-button.primary:hover {
-
             background: #0066d6;
         }
 
 
         /* =========================
-           WEEKLY DASHBOARD
+           WEEK SUMMARY
         ========================= */
 
         .week-summary {
-
             background: white;
-
             border-radius: 18px;
-
             padding: 15px 18px;
-
             margin-bottom: 18px;
 
             box-shadow:
-                0 5px 22px
-                rgba(0, 0, 0, 0.06);
+                0 5px 22px rgba(0, 0, 0, 0.06);
 
             display: grid;
-
-            grid-template-columns:
-                1fr auto;
-
+            grid-template-columns: 1fr auto;
             gap: 20px;
-
             align-items: center;
         }
 
-
         .week-summary-title {
-
             font-size: 13px;
-
             color: #86868b;
-
             font-weight: 600;
-
             margin-bottom: 7px;
         }
 
-
         .week-summary-main {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
             font-size: 15px;
-
             font-weight: 600;
         }
 
-
         .progress-bar {
-
             height: 8px;
-
             background: #eeeeef;
-
             border-radius: 999px;
-
             overflow: hidden;
-
             margin-top: 8px;
-
             max-width: 500px;
         }
 
-
         .progress-fill {
-
             height: 100%;
-
             width: 0%;
-
             background: #34c759;
-
             border-radius: 999px;
-
             transition: width 0.3s ease;
         }
 
-
         .week-stats {
-
             display: flex;
-
             gap: 18px;
-
             align-items: center;
         }
 
-
         .week-stat {
-
             text-align: center;
-
             min-width: 65px;
         }
 
-
         .week-stat-number {
-
             display: block;
-
             font-size: 20px;
-
             font-weight: 700;
         }
 
-
         .week-stat-label {
-
             display: block;
-
             margin-top: 2px;
-
             font-size: 11px;
-
             color: #86868b;
         }
 
 
         /* =========================
-           MAIN CONTENT
+           MAIN LAYOUT
         ========================= */
 
         .main-content {
-
             display: grid;
-
-            grid-template-columns: 7fr 3fr;
-
+            grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr);
             gap: 24px;
-
             align-items: start;
         }
 
 
         /* =========================
-           CALENDAR
+           CALENDAR SECTION
         ========================= */
 
         .calendar-section {
-
             min-width: 0;
-
-            display: flex;
-
-            flex-direction: column;
         }
 
-
         .calendar-header {
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 12px;
-
             margin-bottom: 15px;
-
             padding: 0 5px;
         }
 
-
         .month-controls {
-
             display: flex;
-
             align-items: center;
-
             gap: 10px;
         }
 
-
         #monthName {
-
-            min-width: 150px;
-
+            min-width: 160px;
             text-align: center;
-
             font-size: 20px;
-
             font-weight: 600;
         }
 
-
         .month-button {
-
             width: 38px;
-
             height: 38px;
-
             border: none;
-
             border-radius: 50%;
-
             background: white;
 
             box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.08);
+                0 2px 8px rgba(0, 0, 0, 0.08);
 
             font-size: 19px;
-
             cursor: pointer;
-
-            transition: 0.2s;
+            transition: 0.2s ease;
         }
 
-
         .month-button:hover {
-
             background: #e9e9ed;
-
             transform: scale(1.05);
         }
 
-
         .calendar-tools {
-
             display: flex;
-
             align-items: center;
-
             gap: 7px;
-
             flex-wrap: wrap;
-
             justify-content: flex-end;
         }
 
-
         .calendar-tool {
-
             border: none;
-
             border-radius: 10px;
-
             background: white;
-
             padding: 8px 11px;
-
             font-size: 12px;
-
             font-weight: 600;
-
             cursor: pointer;
 
             box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.06);
-
-            transition: 0.2s;
+                0 2px 8px rgba(0, 0, 0, 0.06);
         }
-
-
-        .calendar-tool:hover {
-
-            background: #e9e9ed;
-        }
-
 
         .calendar-tool.add {
-
             background: #007aff;
-
             color: white;
         }
 
-
         .calendar-tool.add:hover {
-
             background: #0066d6;
         }
 
 
+        /* =========================
+           CALENDAR CARD
+        ========================= */
+
         .calendar-card {
-
+            width: 100%;
             background: white;
-
             border-radius: 22px;
-
             padding: 16px;
 
             box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.08);
+                0 8px 30px rgba(0, 0, 0, 0.08);
+        }
 
-            /*
-                IMPORTANT:
-                Do not give this a fixed height.
-                It must be allowed to grow with
-                the calendar grid.
-            */
-
-            height: auto;
-
-            min-height: 0;
-
-            overflow: visible;
+        .calendar-card-inner {
+            width: 100%;
         }
 
 
+        /* =========================
+           WEEKDAYS
+        ========================= */
+
         .weekdays {
-
             display: grid;
-
-            grid-template-columns:
-                repeat(7, minmax(0, 1fr));
-
+            grid-template-columns: repeat(7, minmax(0, 1fr));
             gap: 8px;
-
             margin-bottom: 8px;
         }
 
-
         .weekday {
-
             text-align: center;
-
             color: #86868b;
-
             font-size: 13px;
-
             font-weight: 600;
-
             padding: 6px;
         }
 
 
         /* =========================
-           DYNAMIC CALENDAR GRID
+           CALENDAR GRID
         ========================= */
 
         #calendar {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(7, minmax(0, 1fr));
-
-            /*
-                IMPORTANT:
-                auto means every row becomes as
-                tall as the tallest day in that row.
-                
-                This allows a day with many
-                assignments to make the entire
-                calendar row taller.
-            */
-
-            grid-auto-rows: minmax(100px, auto);
-
-            align-items: stretch;
-
-            gap: 8px;
-
             width: 100%;
-
-            min-height: 560px;
-
-            height: auto;
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            grid-auto-rows: minmax(110px, auto);
+            gap: 8px;
+            align-items: stretch;
         }
 
 
         /* =========================
-           DAY BOX
+           DAY
         ========================= */
 
         .day {
-
             min-width: 0;
-
-            /*
-                The minimum size is 100px,
-                but there is NO fixed height.
-            */
-
-            min-height: 100px;
-
-            height: auto;
-
-            align-self: stretch;
-
+            min-height: 110px;
             background: #f8f8fa;
-
-            border-radius: 14px;
-
-            padding: 10px;
-
             border: 1px solid #eeeeef;
-
-            transition: 0.2s;
-
-            cursor: pointer;
-
-            /*
-                IMPORTANT:
-                Never hide overflowing assignments.
-            */
-
-            overflow: visible;
-
-            word-break: break-word;
-
-            /*
-                Allows the contents to determine
-                the natural height of the box.
-            */
-
+            border-radius: 14px;
+            padding: 10px;
+            position: relative;
             display: flex;
-
             flex-direction: column;
+            cursor: pointer;
+            transition:
+                background 0.2s ease,
+                border 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
         }
-
 
         .day:hover {
-
             background: #eef3f9;
-
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
-
 
         .day-number {
-
+            display: block;
+            flex: 0 0 auto;
             font-size: 15px;
-
             font-weight: 600;
-
+            line-height: 20px;
             margin-bottom: 5px;
-
-            flex-shrink: 0;
-        }
-
-
-        .empty-day {
-
-            min-height: 100px;
-
-            height: auto;
-
-            background: transparent;
-
-            border: none;
-
-            pointer-events: none;
-        }
-
-
-        .today {
-
-            background: #e8f1ff;
-
-            border: 2px solid #007aff;
-        }
-
-
-        .today .day-number {
-
-            color: #007aff;
-        }
-
-
-        .day.selected {
-
-            border: 2px solid #007aff;
-
-            background: #eef6ff;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
         }
 
 
         /* =========================
-           CALENDAR ITEMS
+           EMPTY DAY
+        ========================= */
+
+        .empty-day {
+            min-height: 110px;
+            background: transparent;
+            border: none;
+            pointer-events: none;
+        }
+
+        .empty-day:hover {
+            background: transparent;
+            transform: none;
+            box-shadow: none;
+        }
+
+
+        /* =========================
+           TODAY & SELECTED
+        ========================= */
+
+        .day.today {
+            background: #e8f1ff;
+            border: 2px solid #007aff;
+            padding: 9px;
+        }
+
+        .day.today .day-number {
+            color: #007aff;
+        }
+
+        .day.selected {
+            border: 2px solid #007aff;
+            background: #eef6ff;
+            padding: 9px;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.10);
+        }
+
+
+        /* =========================
+           ASSIGNMENTS
+           ONE LINE + ELLIPSIS
         ========================= */
 
         .assignment {
-
-            color: white;
-
+            width: 100%;
+            min-width: 0;
+            flex: 0 0 25px;
+            height: 25px;
+            min-height: 25px;
+            max-height: 25px;
+            margin-top: 4px;
+            padding: 5px 7px;
             border-radius: 8px;
-
-            /*
-                Slightly more vertical room
-                for multiple items.
-            */
-
-            padding: 6px 7px;
-
-            margin-top: 5px;
-
+            color: white;
             font-size: 11px;
-
+            line-height: 15px;
             font-weight: 600;
 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
             cursor: pointer;
-
-            /*
-                IMPORTANT:
-                Let the item wrap if necessary.
-            */
-
-            overflow: visible;
-
-            text-overflow: clip;
-
-            white-space: normal;
-
-            transition: 0.15s;
-
             display: block;
 
-            width: 100%;
-
-            /*
-                Each assignment contributes
-                its own height to the day.
-            */
-
-            min-height: 0;
-
-            flex-shrink: 0;
-
-            line-height: 1.3;
-
-            word-break: break-word;
+            transition:
+                transform 0.15s ease,
+                filter 0.15s ease;
         }
 
-
         .assignment:hover {
-
             transform: translateY(-1px);
-
             filter: brightness(0.94);
         }
 
-
         .assignment.completed {
-
-            opacity: 0.30;
-
+            opacity: 0.35;
             text-decoration: line-through;
         }
 
-
         .assignment.calendar-only {
-
             box-shadow:
-                inset 0 0 0 1px
-                rgba(255,255,255,0.5);
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
         }
 
-
         .assignment.calendar-only::before {
-
             content: "• ";
-
-            opacity: 0.85;
         }
 
 
@@ -729,2339 +471,296 @@
         ========================= */
 
         .todo-area {
-
+            min-width: 0;
             display: flex;
-
             flex-direction: column;
-
             gap: 18px;
         }
 
-
         .todo-card {
-
             background: white;
-
             border-radius: 22px;
-
             padding: 22px;
+            min-width: 0;
 
             box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.08);
-
-            /*
-                Let the card grow naturally
-                as more to-dos are added.
-            */
-
-            height: auto;
-
-            min-height: 0;
+                0 8px 30px rgba(0, 0, 0, 0.08);
         }
 
-
         .todo-card h2 {
-
-            margin: 0 0 14px 0;
-
+            margin: 0 0 14px;
             font-size: 21px;
-
             letter-spacing: -0.4px;
         }
 
-
         .todo-input {
-
             display: flex;
-
             gap: 8px;
-
             margin-bottom: 10px;
         }
-
 
         .todo-input input {
-
             flex: 1;
-
             min-width: 0;
-
             padding: 11px 12px;
-
             border: 1px solid #d2d2d7;
-
             border-radius: 10px;
-
             font-size: 14px;
-
             outline: none;
         }
-
 
         .todo-input input:focus {
-
             border-color: #007aff;
-
             box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.12);
+                0 0 0 3px rgba(0, 122, 255, 0.12);
         }
-
 
         .todo-input button {
-
             width: 42px;
-
             height: 42px;
-
+            flex: 0 0 42px;
             border: none;
-
             border-radius: 10px;
-
             background: #007aff;
-
             color: white;
-
             font-size: 22px;
-
             cursor: pointer;
-
-            transition: 0.2s;
         }
-
 
         .todo-input button:hover {
-
             background: #0066d6;
-
-            transform: scale(1.03);
         }
 
-
         .category-select {
-
             width: 100%;
-
             margin-bottom: 10px;
-
             padding: 10px 12px;
-
             border: 1px solid #d2d2d7;
-
             border-radius: 10px;
-
             background: white;
-
             font-size: 13px;
-
-            outline: none;
-
             cursor: pointer;
         }
 
 
-        .category-select:focus {
-
-            border-color: #007aff;
-        }
-
+        /* =========================
+           TODO LIST
+           ABOUT 7 ITEMS VISIBLE
+        ========================= */
 
         .todo-items {
-
             display: flex;
-
             flex-direction: column;
-
             gap: 8px;
 
             /*
-                IMPORTANT:
-                Do not give this container a
-                fixed height or overflow setting.
+                Each normal item is approximately 43px tall.
+                7 items + 6 gaps = approximately 349px.
+                This allows roughly seven items before scrolling.
             */
+            max-height: 350px;
 
-            height: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
 
-            min-height: 0;
+            padding-right: 4px;
 
-            overflow: visible;
+            scrollbar-width: thin;
+            scrollbar-color: #c7c7cc transparent;
         }
 
+        .todo-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .todo-items::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .todo-items::-webkit-scrollbar-thumb {
+            background: #c7c7cc;
+            border-radius: 999px;
+        }
+
+        .todo-items::-webkit-scrollbar-thumb:hover {
+            background: #a8a8ad;
+        }
 
         .todo-item {
-
+            width: 100%;
             display: flex;
-
             align-items: center;
-
             gap: 9px;
-
             padding: 11px;
-
             background: #f8f8fa;
-
             border-radius: 10px;
-
-            cursor: pointer;
-
             border: 2px solid transparent;
-
-            transition: 0.2s;
-
-            /*
-                Allow every item to have its
-                natural height.
-            */
-
-            min-height: 40px;
-
-            height: auto;
-
+            min-height: 43px;
             flex-shrink: 0;
+            cursor: pointer;
         }
 
-
         .todo-item:hover {
-
             background: #f0f0f3;
         }
 
-
         .todo-item.selected-todo {
-
             border-color: #007aff;
-
             background: #eef6ff;
         }
 
-
         .todo-item input[type="checkbox"] {
-
             width: 17px;
-
             height: 17px;
-
-            cursor: pointer;
-
             flex-shrink: 0;
+            cursor: pointer;
         }
 
-
-        .todo-item span {
-
+        .todo-item span.todo-text {
             flex: 1;
-
+            min-width: 0;
             font-size: 14px;
 
-            min-width: 0;
-
-            /*
-                Allow long assignment names
-                to wrap instead of being clipped.
-            */
-
-            overflow: visible;
-
-            text-overflow: clip;
-
-            white-space: normal;
-
-            word-break: break-word;
-
-            line-height: 1.35;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
+        .todo-item.completed span.todo-text {
+            text-decoration: line-through;
+            opacity: 0.45;
+        }
 
         .delete-todo {
-
             border: none;
-
             background: transparent;
-
             color: #86868b;
-
             font-size: 16px;
-
             cursor: pointer;
-
             flex-shrink: 0;
         }
 
-
         .delete-todo:hover {
-
             color: #ff3b30;
         }
 
-
         .category-dot {
-
             width: 9px;
-
             height: 9px;
-
             border-radius: 50%;
-
             flex-shrink: 0;
         }
 
-
         .no-category-dot {
-
             background: #c7c7cc;
-
             border: 1px solid #b5b5ba;
         }
 
-
         .empty-message {
-
             color: #86868b;
-
             font-size: 13px;
-
             text-align: center;
-
             padding: 16px 5px;
         }
 
 
         /* =========================
-           MODAL
+           MODALS
         ========================= */
 
         .modal-overlay {
-
             position: fixed;
-
             inset: 0;
-
-            background:
-                rgba(0, 0, 0, 0.35);
-
-            backdrop-filter:
-                blur(8px);
-
-            -webkit-backdrop-filter:
-                blur(8px);
-
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             padding: 20px;
-
             z-index: 1000;
         }
 
-
         .modal-overlay.hidden {
-
             display: none;
         }
 
-
         .modal {
-
             width: 100%;
-
             max-width: 560px;
-
             max-height: 90vh;
-
             overflow-y: auto;
-
             background: white;
-
             border-radius: 24px;
-
             padding: 26px;
-
             box-shadow:
-                0 25px 70px
-                rgba(0, 0, 0, 0.22);
-
-            animation:
-                modalIn 0.2s ease-out;
+                0 25px 70px rgba(0, 0, 0, 0.22);
         }
-
-
-        @keyframes modalIn {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    scale(0.96)
-                    translateY(8px);
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    scale(1)
-                    translateY(0);
-            }
-        }
-
 
         .modal-header {
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             margin-bottom: 20px;
         }
 
-
         .modal-header h2 {
-
             margin: 0;
-
             font-size: 24px;
         }
 
-
         .close-modal {
-
             width: 34px;
-
             height: 34px;
-
             border: none;
-
             border-radius: 50%;
-
             background: #f1f1f3;
-
             color: #555;
-
             font-size: 20px;
-
             cursor: pointer;
         }
 
 
-        .close-modal:hover {
-
-            background: #e4e4e7;
-        }
-
+        /* =========================
+           FORMS
+        ========================= */
 
         .form-group {
-
             margin-bottom: 16px;
         }
 
-
         .form-group label {
-
             display: block;
-
             margin-bottom: 7px;
-
             font-size: 12px;
-
             font-weight: 600;
-
             color: #6e6e73;
         }
-
 
         .form-input,
         .form-select,
         .form-textarea {
-
             width: 100%;
-
             padding: 11px 12px;
-
             border: 1px solid #d2d2d7;
-
             border-radius: 10px;
-
             background: white;
-
             font-size: 14px;
-
             outline: none;
         }
 
-
         .form-textarea {
-
             min-height: 110px;
-
             resize: vertical;
-
             line-height: 1.5;
         }
 
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-
-            border-color: #007aff;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-
-        .form-row {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 12px;
-        }
-
-
-        .checkbox-row {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            padding: 12px;
-
-            background: #f8f8fa;
-
-            border-radius: 11px;
-        }
-
-
-        .checkbox-row input {
-
-            width: 18px;
-
-            height: 18px;
-        }
-
-
-        .checkbox-row label {
-
-            margin: 0;
-
-            color: #1d1d1f;
-
-            font-size: 13px;
-
-            font-weight: 500;
-        }
-
-
-        .modal-footer {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 10px;
-
-            margin-top: 22px;
-        }
-
-
-        .modal-footer-left,
-        .modal-footer-right {
-
-            display: flex;
-
-            gap: 8px;
-
-            align-items: center;
-        }
-
-
-        .modal-button {
-
-            border: none;
-
-            border-radius: 10px;
-
-            padding: 10px 16px;
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-
-        .modal-button.cancel {
-
-            background: #f1f1f3;
-
-            color: #1d1d1f;
-        }
-
-
-        .modal-button.primary {
-
-            background: #007aff;
-
-            color: white;
-        }
-
-
-        .modal-button.danger {
-
-            background: #fff0ef;
-
-            color: #ff3b30;
-        }
-
-
-        .modal-button.success {
-
-            background: #e8f8ed;
-
-            color: #248a3d;
-        }
-
-
-        /* =========================
-           CATEGORY MODAL
-        ========================= */
-
-        .category-list {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 10px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .category-row {
-
-            display: grid;
-
-            grid-template-columns:
-                38px 1fr 50px 40px;
-
-            align-items: center;
-
-            gap: 10px;
-
-            padding: 10px;
-
-            background: #f8f8fa;
-
-            border-radius: 12px;
-        }
-
-
-        .category-color {
-
-            width: 32px;
-
-            height: 32px;
-
-            padding: 0;
-
-            border: none;
-
-            border-radius: 9px;
-
-            background: transparent;
-
-            cursor: pointer;
-        }
-
-
-        .category-name-input {
-
-            width: 100%;
-
-            padding: 9px 10px;
-
-            border: 1px solid #d2d2d7;
-
-            border-radius: 9px;
-
-            font-size: 14px;
-
-            outline: none;
-        }
-
-
-        .category-color-preview {
-
-            width: 24px;
-
-            height: 24px;
-
-            border-radius: 50%;
-
-            border: 1px solid
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        .delete-category {
-
-            width: 34px;
-
-            height: 34px;
-
-            border: none;
-
-            background: transparent;
-
-            color: #86868b;
-
-            border-radius: 8px;
-
-            font-size: 17px;
-
-            cursor: pointer;
-        }
-
-
-        .delete-category:hover {
-
-            color: #ff3b30;
-
-            background: #fff0ef;
-        }
-
-
-        .add-category-area {
-
-            display: flex;
-
-            gap: 8px;
-
-            padding-top: 16px;
-
-            border-top:
-                1px solid #eeeeef;
-        }
-
-
-        .new-category-name {
-
-            flex: 1;
-
-            min-width: 0;
-
-            padding: 10px 12px;
-
-            border: 1px solid #d2d2d7;
-
-            border-radius: 10px;
-
-            font-size: 14px;
-
-            outline: none;
-        }
-
-
-        .new-category-color {
-
-            width: 44px;
-
-            height: 42px;
-
-            border: none;
-
-            padding: 3px;
-
-            border-radius: 10px;
-
-            background: #f1f1f3;
-
-            cursor: pointer;
-        }
-
-
-        .add-category-button {
-
-            border: none;
-
-            border-radius: 10px;
-
-            padding: 0 15px;
-
-            background: #007aff;
-
-            color: white;
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-
-        /* =========================
-           SEARCH MODAL
-        ========================= */
-
-        .search-input-wrap {
-
-            position: relative;
-
-            margin-bottom: 15px;
-        }
-
-
-        .search-input {
-
-            width: 100%;
-
-            padding: 13px 14px;
-
-            border: 1px solid #d2d2d7;
-
-            border-radius: 12px;
-
-            font-size: 15px;
-
-            outline: none;
-        }
-
-
-        .search-input:focus {
-
-            border-color: #007aff;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-
-        .search-results {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 8px;
-
-            max-height: 400px;
-
-            overflow-y: auto;
-        }
-
-
-        .search-result {
-
-            padding: 12px;
-
-            background: #f8f8fa;
-
-            border-radius: 11px;
-
-            cursor: pointer;
-
-            transition: 0.15s;
-        }
-
-
-        .search-result:hover {
-
-            background: #eef3f9;
-        }
-
-
-        .search-result-title {
-
-            font-size: 14px;
-
-            font-weight: 600;
-
-            margin-bottom: 4px;
-        }
-
-
-        .search-result-meta {
-
-            color: #86868b;
-
-            font-size: 11px;
-        }
-
-
-        /* =========================
-           IMPORT
-        ========================= */
-
-        #importFile {
-
-            display: none;
-        }
-
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1000px) {
-
-            .main-content {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            /*
-                IMPORTANT:
-                No fixed calendar-card height.
-            */
-
-            .calendar-card {
-
-                min-height: 0;
-
-                height: auto;
-            }
-
-
-            .todo-area {
-
-                order: 2;
-            }
-        }
-
-
-        @media (max-width: 700px) {
-
-            .page {
-
-                padding: 18px 12px 30px;
-            }
-
-
-            .header {
-
-                align-items: flex-start;
-
-                flex-direction: column;
-            }
-
-
-            .header-actions {
-
-                width: 100%;
-
-                justify-content: flex-start;
-            }
-
-
-            h1 {
-
-                font-size: 27px;
-            }
-
-
-            .week-summary {
-
-                grid-template-columns: 1fr;
-
-                gap: 12px;
-            }
-
-
-            .week-stats {
-
-                justify-content: space-around;
-            }
-
-
-            .calendar-header {
-
-                flex-direction: column;
-
-                align-items: center;
-            }
-
-
-            .calendar-tools {
-
-                justify-content: center;
-            }
-
-
-            .calendar-card {
-
-                overflow-x: auto;
-
-                padding: 10px;
-            }
-
-
-            /*
-                Keep the calendar wide enough
-                for seven columns, but allow
-                its rows to grow vertically.
-            */
-
-            #calendar,
-            .weekdays {
-
-                min-width: 650px;
-            }
-
-
-            #calendar {
-
-                height: auto;
-
-                min-height: 560px;
-
-                grid-auto-rows: minmax(100px, auto);
-            }
-
-
-            .category-row {
-
-                grid-template-columns:
-                    38px 1fr 40px;
-            }
-
-
-            .category-color-preview {
-
-                display: none;
-            }
-
-
-            .form-row {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .modal-footer {
-
-                flex-direction: column;
-
-                align-items: stretch;
-            }
-
-
-            .modal-footer-left,
-            .modal-footer-right {
-
-                width: 100%;
-            }
-
-
-            .modal-button {
-
-                flex: 1;
-            }
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-
-<div class="page">
-
-
-    <!-- =========================
-         HEADER
-    ========================== -->
-
-    <div class="header">
-
-        <h1>
-            My Assignment Calendar
-        </h1>
-
-
-        <div class="header-actions">
-
-            <button
-                class="header-button"
-                id="searchButton"
-            >
-                🔎 Search
-            </button>
-
-
-            <button
-                class="header-button"
-                id="todayButton"
-            >
-                Today
-            </button>
-
-
-            <button
-                class="header-button"
-                id="categorySettingsButton"
-            >
-                ⚙️ Categories
-            </button>
-
-
-            <button
-                class="header-button"
-                id="exportButton"
-            >
-                ↓ Backup
-            </button>
-
-
-            <button
-                class="header-button"
-                id="importButton"
-            >
-                ↑ Restore
-            </button>
-
-
-            <input
-                type="file"
-                id="importFile"
-                accept=".json"
-            >
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================
-         WEEKLY DASHBOARD
-    ========================== -->
-
-    <div class="week-summary">
-
-        <div>
-
-            <div class="week-summary-title">
-                THIS WEEK
-            </div>
-
-
-            <div class="week-summary-main">
-
-                <span id="weekProgressText">
-                    0% complete
-                </span>
-
-            </div>
-
-
-            <div class="progress-bar">
-
-                <div
-                    class="progress-fill"
-                    id="weekProgressFill"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="week-stats">
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekTotal"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Assignments
-                </span>
-
-            </div>
-
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekCompleted"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Completed
-                </span>
-
-            </div>
-
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekEvents"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Events
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
-
-    <div class="main-content">
-
-
-        <!-- =========================
-             CALENDAR
-        ========================== -->
-
-        <div class="calendar-section">
-
-
-            <div class="calendar-header">
-
-                <div class="month-controls">
-
-                    <button
-                        class="month-button"
-                        id="previousMonth"
-                    >
-                        ←
-                    </button>
-
-
-                    <span id="monthName"></span>
-
-
-                    <button
-                        class="month-button"
-                        id="nextMonth"
-                    >
-                        →
-                    </button>
-
-                </div>
-
-
-                <div class="calendar-tools">
-
-                    <select
-                        class="calendar-tool"
-                        id="categoryFilter"
-                    >
-
-                        <option value="all">
-                            All Categories
-                        </option>
-
-                    </select>
-
-
-                    <button
-                        class="calendar-tool add"
-                        id="addCalendarItem"
-                    >
-                        + Add to Day
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div class="calendar-card">
-
-
-                <div class="weekdays">
-
-                    <div class="weekday">
-                        Sun
-                    </div>
-
-                    <div class="weekday">
-                        Mon
-                    </div>
-
-                    <div class="weekday">
-                        Tue
-                    </div>
-
-                    <div class="weekday">
-                        Wed
-                    </div>
-
-                    <div class="weekday">
-                        Thu
-                    </div>
-
-                    <div class="weekday">
-                        Fri
-                    </div>
-
-                    <div class="weekday">
-                        Sat
-                    </div>
-
-                </div>
-
-
-                <div id="calendar"></div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =========================
-             TODO AREA
-        ========================== -->
-
-        <div class="todo-area">
-
-
-            <div class="todo-card">
-
-                <h2>
-                    Assignments
-                </h2>
-
-
-                <select
-                    id="categorySelect"
-                    class="category-select"
-                >
-                </select>
-
-
-                <div class="todo-input">
-
-                    <input
-                        type="text"
-                        id="todoInput"
-                        placeholder="Add an assignment..."
-                        autocomplete="off"
-                    >
-
-
-                    <button
-                        id="addTodo"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="todo-items"
-                    id="todoItems"
-                >
-
-                    <div
-                        class="empty-message"
-                        id="emptyMessage"
-                    >
-                        No assignments yet.
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="todo-card">
-
-                <h2>
-                    General To-Do
-                </h2>
-
-
-                <div class="todo-input">
-
-                    <input
-                        type="text"
-                        id="generalTodoInput"
-                        placeholder="Add a to-do..."
-                        autocomplete="off"
-                    >
-
-
-                    <button
-                        id="addGeneralTodo"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="todo-items"
-                    id="generalTodoItems"
-                >
-
-                    <div
-                        class="empty-message"
-                        id="generalEmptyMessage"
-                    >
-                        No general to-dos yet.
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================================
-     ASSIGNMENT / EVENT MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="assignmentModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2 id="assignmentModalTitle">
-                Add Calendar Item
-            </h2>
-
-
-            <button
-                class="close-modal"
-                id="closeAssignmentModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="assignmentTitle">
-                TITLE
-            </label>
-
-
-            <input
-                type="text"
-                id="assignmentTitle"
-                class="form-input"
-                placeholder="e.g. Biology Test"
-                maxlength="100"
-            >
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label for="assignmentDate">
-                    DATE
-                </label>
-
-
-                <input
-                    type="date"
-                    id="assignmentDate"
-                    class="form-input"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="assignmentCategory">
-                    CATEGORY
-                </label>
-
-
-                <select
-                    id="assignmentCategory"
-                    class="form-select"
-                >
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="assignmentNotes">
-                NOTES
-            </label>
-
-
-            <textarea
-                id="assignmentNotes"
-                class="form-textarea"
-                placeholder="Add any details, study notes, instructions, etc."
-            ></textarea>
-
-        </div>
-
-
-        <div class="checkbox-row">
-
-            <input
-                type="checkbox"
-                id="showInTodo"
-                checked
-            >
-
-
-            <label for="showInTodo">
-                Show this item in my Assignments to-do list
-            </label>
-
-        </div>
-
-
-        <div class="modal-footer">
-
-            <div class="modal-footer-left">
-
-                <button
-                    class="modal-button danger"
-                    id="deleteAssignmentButton"
-                >
-                    Delete
-                </button>
-
-            </div>
-
-
-            <div class="modal-footer-right">
-
-                <button
-                    class="modal-button cancel"
-                    id="cancelAssignmentModal"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="modal-button primary"
-                    id="saveAssignmentButton"
-                >
-                    Save
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================================
-     CATEGORY MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="categoryModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2>
-                Categories
-            </h2>
-
-
-            <button
-                class="close-modal"
-                id="closeCategoryModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div
-            class="category-list"
-            id="categoryList"
-        >
-        </div>
-
-
-        <div class="add-category-area">
-
-            <input
-                type="text"
-                class="new-category-name"
-                id="newCategoryName"
-                placeholder="New category name..."
-                maxlength="30"
-            >
-
-
-            <input
-                type="color"
-                class="new-category-color"
-                id="newCategoryColor"
-                value="#007aff"
-            >
-
-
-            <button
-                class="add-category-button"
-                id="addCategory"
-            >
-                Add
-            </button>
-
-        </div>
-
-
-        <div class="modal-footer">
-
-            <div></div>
-
-
-            <button
-                class="modal-button primary"
-                id="doneCategorySettings"
-            >
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================================
-     SEARCH MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="searchModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2>
-                Search
-            </h2>
-
-
-            <button
-                class="close-modal"
-                id="closeSearchModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="search-input-wrap">
-
-            <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="Search assignments, events, or notes..."
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <div
-            class="search-results"
-            id="searchResults"
-        >
-
-            <div class="empty-message">
-                Start typing to search.
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script src="script.js"></script>
-
-
-</body>
-
-</html>
-```
-            background:
-                linear-gradient(
-                    135deg,
-                    #f5f7fa 0%,
-                    #eef2f7 100%
-                );
-
-            color: #1d1d1f;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .page {
-            width: min(1500px, 100%);
-            margin: 0 auto;
-            padding: 28px;
-        }
-
-        /* =====================================================
-           HEADER
-        ===================================================== */
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 22px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 34px;
-            font-weight: 750;
-            letter-spacing: -1px;
-        }
-
-        .header-actions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .header-button {
-            border: 1px solid #d2d2d7;
-            background: rgba(255,255,255,.9);
-            color: #1d1d1f;
-            border-radius: 12px;
-            padding: 9px 13px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: .15s;
-        }
-
-        .header-button:hover {
-            background: #fff;
-            transform: translateY(-1px);
-        }
-
-        #importFile {
-            display: none;
-        }
-
-        /* =====================================================
-           WEEK SUMMARY
-        ===================================================== */
-
-        .week-summary {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            gap: 24px;
-
-            background: rgba(255,255,255,.92);
-            border: 1px solid #e5e5ea;
-            border-radius: 22px;
-            padding: 22px;
-            margin-bottom: 22px;
-
-            box-shadow:
-                0 8px 30px rgba(0,0,0,.06);
-        }
-
-        .week-summary-title {
-            color: #86868b;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .7px;
-            margin-bottom: 6px;
-        }
-
-        .week-summary-main {
-            font-size: 23px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 9px;
-            background: #e5e5ea;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #007aff;
-            border-radius: inherit;
-            transition: width .25s;
-        }
-
-        .week-stats {
-            display: flex;
-            gap: 28px;
-        }
-
-        .week-stat {
-            text-align: center;
-            min-width: 80px;
-        }
-
-        .week-stat-number {
-            display: block;
-            font-size: 24px;
-            font-weight: 750;
-        }
-
-        .week-stat-label {
-            display: block;
-            color: #86868b;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        /* =====================================================
-           MAIN
-        ===================================================== */
-
-        .main-content {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 22px;
-            align-items: start;
-        }
-
-        .calendar-section {
-            min-width: 0;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 12px;
-        }
-
-        .month-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .month-button {
-            width: 38px;
-            height: 38px;
-            border: 1px solid #d2d2d7;
-            background: white;
-            border-radius: 11px;
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        .month-button:hover {
-            background: #f5f5f7;
-        }
-
-        #monthName {
-            min-width: 180px;
-            text-align: center;
-            font-size: 21px;
-            font-weight: 700;
-        }
-
-        .calendar-tools {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .calendar-tool {
-            border: 1px solid #d2d2d7;
-            background: white;
-            border-radius: 11px;
-            padding: 9px 12px;
-            font-size: 13px;
-        }
-
-        .calendar-tool.add {
-            background: #007aff;
-            border-color: #007aff;
-            color: white;
-            font-weight: 650;
-        }
-
-        .calendar-card {
-            background: white;
-            border: 1px solid #e5e5ea;
-            border-radius: 22px;
-            padding: 14px;
-
-            box-shadow:
-                0 8px 30px rgba(0,0,0,.08);
-
-            overflow-x: auto;
-        }
-
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .weekday {
-            text-align: center;
-            color: #86868b;
-            font-size: 13px;
-            font-weight: 650;
-            padding: 6px;
-        }
-
-        /* =====================================================
-           CALENDAR GRID
-        ===================================================== */
-
-        #calendar {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            grid-auto-rows: minmax(100px, auto);
-            gap: 8px;
-            min-height: 560px;
-            align-items: start;
-        }
-
-        .day {
-            min-height: 100px;
-            height: auto;
-
-            background: #f8f8fa;
-            border-radius: 14px;
-            padding: 10px;
-
-            border: 1px solid #eeeeef;
-
-            transition: .2s;
-            cursor: pointer;
-
-            overflow: visible;
-        }
-
-        .day:hover {
-            background: #eef3f9;
-            transform: translateY(-2px);
-        }
-
-        .day-number {
-            font-size: 15px;
-            font-weight: 650;
-            margin-bottom: 6px;
-        }
-
-        .empty-day {
-            min-height: 100px;
-            background: transparent;
-            border: none;
-            pointer-events: none;
-        }
-
-        .today {
-            background: #e8f1ff;
-            border: 2px solid #007aff;
-        }
-
-        .today .day-number {
-            color: #007aff;
-        }
-
-        .day.selected {
-            border: 2px solid #007aff;
-            background: #eef6ff;
-
-            box-shadow:
-                0 0 0 3px rgba(0,122,255,.10);
-        }
-
-        /* =====================================================
-           ASSIGNMENTS
-        ===================================================== */
-
-        .assignment {
-            display: block;
-
-            width: 100%;
-            height: 24px;
-            min-height: 24px;
-
-            color: white;
-            background: #007aff;
-
-            border-radius: 8px;
-
-            padding: 0 8px;
-            margin: 3px 0;
-
-            font-size: 11px;
-            font-weight: 650;
-            line-height: 24px;
-
-            cursor: pointer;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-
-            transition: .15s;
-        }
-
-        .assignment:hover {
-            transform: translateY(-1px);
-            filter: brightness(.94);
-        }
-
-        .assignment.completed {
-            opacity: .30;
-            text-decoration: line-through;
-        }
-
-        .assignment.calendar-only {
-            box-shadow:
-                inset 0 0 0 1px rgba(255,255,255,.5);
-        }
-
-        .assignment.calendar-only::before {
-            content: "• ";
-            opacity: .85;
-        }
-
-        /* =====================================================
-           TODO AREA
-        ===================================================== */
-
-        .todo-area {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .todo-card {
-            background: white;
-            border: 1px solid #e5e5ea;
-            border-radius: 22px;
-            padding: 22px;
-
-            box-shadow:
-                0 8px 30px rgba(0,0,0,.06);
-        }
-
-        .todo-card h2 {
-            margin: 0 0 14px;
-            font-size: 18px;
-        }
-
-        .todo-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 13px;
-        }
-
-        .todo-input input {
-            min-width: 0;
-            flex: 1;
-
-            border: 1px solid #d2d2d7;
-            border-radius: 11px;
-            padding: 10px 12px;
-            outline: none;
-        }
-
-        .todo-input input:focus {
-            border-color: #007aff;
-            box-shadow:
-                0 0 0 3px rgba(0,122,255,.1);
-        }
-
-        .todo-input button {
-            border: none;
-            border-radius: 11px;
-            padding: 0 14px;
-            background: #007aff;
-            color: white;
-            font-weight: 650;
-        }
-
-        .category-select {
-            width: 100%;
-            margin-bottom: 10px;
-            border: 1px solid #d2d2d7;
-            border-radius: 11px;
-            padding: 9px 10px;
-            background: white;
-        }
-
-        .todo-items {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-
-            max-height: 312px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-
-            min-height: 39px;
-
-            padding: 7px 8px;
-
-            border-radius: 10px;
-            background: #f7f7f8;
-
-            cursor: pointer;
-        }
-
-        .todo-item:hover {
-            background: #eef3f9;
-        }
-
-        .todo-item span {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 13px;
-        }
-
-        .selected-todo {
-            outline: 2px solid rgba(0,122,255,.18);
-            background: #eef6ff;
-        }
-
-        .category-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            flex: 0 0 auto;
-        }
-
-        .no-category-dot {
-            background: #8e8e93;
-        }
-
-        .delete-todo {
-            border: none;
-            background: transparent;
-            color: #8e8e93;
-            font-size: 20px;
-            line-height: 1;
-            padding: 0 4px;
-        }
-
-        .delete-todo:hover {
-            color: #ff3b30;
-        }
-
-        .empty-message {
-            color: #86868b;
-            text-align: center;
-            padding: 18px 8px;
-            font-size: 13px;
-        }
-
-        /* =====================================================
-           MODALS
-        ===================================================== */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-
-            z-index: 10000;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-
-            background: rgba(0,0,0,.28);
-            backdrop-filter: blur(12px);
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
-
-        .modal {
-            width: min(560px, 100%);
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-
-            box-shadow:
-                0 25px 80px rgba(0,0,0,.25);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 22px;
-        }
-
-        .close-modal {
-            width: 34px;
-            height: 34px;
-
-            border: none;
-            background: #f1f1f3;
-            border-radius: 50%;
-
-            font-size: 22px;
-            line-height: 1;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-
-            font-size: 12px;
-            color: #6e6e73;
-            font-weight: 650;
-        }
-
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-
-            border: 1px solid #d2d2d7;
-            border-radius: 11px;
-
-            padding: 11px 12px;
-            outline: none;
-        }
-
-        .form-textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
         .form-input:focus,
         .form-select:focus,
         .form-textarea:focus {
             border-color: #007aff;
             box-shadow:
-                0 0 0 3px rgba(0,122,255,.1);
+                0 0 0 3px rgba(0, 122, 255, 0.10);
         }
 
         .form-row {
@@ -3073,14 +772,22 @@
         .checkbox-row {
             display: flex;
             align-items: center;
-            gap: 9px;
-            margin: 12px 0 20px;
-            font-size: 13px;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f8fa;
+            border-radius: 11px;
         }
 
         .checkbox-row input {
-            width: 17px;
-            height: 17px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-row label {
+            margin: 0;
+            color: #1d1d1f;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         .modal-footer {
@@ -3088,27 +795,23 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
-
-            margin-top: 18px;
+            margin-top: 22px;
         }
 
         .modal-footer-left,
         .modal-footer-right {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
 
         .modal-button {
             border: none;
-            border-radius: 11px;
-            padding: 10px 15px;
+            border-radius: 10px;
+            padding: 10px 16px;
             font-size: 13px;
-            font-weight: 650;
-        }
-
-        .modal-button.primary {
-            background: #007aff;
-            color: white;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .modal-button.cancel {
@@ -3116,99 +819,122 @@
             color: #1d1d1f;
         }
 
+        .modal-button.primary {
+            background: #007aff;
+            color: white;
+        }
+
         .modal-button.danger {
             background: #fff0ef;
             color: #ff3b30;
         }
 
-        /* =====================================================
-           CATEGORY MANAGER
-        ===================================================== */
+
+        /* =========================
+           CATEGORY MODAL
+        ========================= */
 
         .category-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 18px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .category-row {
             display: grid;
-            grid-template-columns: 38px 1fr 40px 40px;
+            grid-template-columns: 38px 1fr 50px 40px;
             align-items: center;
-            gap: 8px;
-
-            padding: 8px;
-
-            background: #f7f7f8;
-            border-radius: 11px;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f8fa;
+            border-radius: 12px;
         }
 
         .category-color {
-            width: 34px;
-            height: 34px;
-            border: none;
+            width: 32px;
+            height: 32px;
             padding: 0;
+            border: none;
+            border-radius: 9px;
             background: transparent;
+            cursor: pointer;
         }
 
         .category-name-input {
             width: 100%;
+            padding: 9px 10px;
             border: 1px solid #d2d2d7;
             border-radius: 9px;
-            padding: 8px 9px;
-            background: white;
+            font-size: 14px;
+            outline: none;
         }
 
         .category-color-preview {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .delete-category {
+            width: 34px;
+            height: 34px;
             border: none;
             background: transparent;
-            color: #8e8e93;
-            font-size: 21px;
+            color: #86868b;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
         }
 
         .delete-category:hover {
             color: #ff3b30;
+            background: #fff0ef;
         }
 
         .add-category-area {
-            display: grid;
-            grid-template-columns: 1fr 50px auto;
+            display: flex;
             gap: 8px;
-            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #eeeeef;
         }
 
         .new-category-name {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 12px;
             border: 1px solid #d2d2d7;
             border-radius: 10px;
-            padding: 10px;
+            font-size: 14px;
+            outline: none;
         }
 
         .new-category-color {
             width: 44px;
-            height: 38px;
+            height: 42px;
             border: none;
-            padding: 0;
+            padding: 3px;
+            border-radius: 10px;
+            background: #f1f1f3;
+            cursor: pointer;
         }
 
         .add-category-button {
             border: none;
             border-radius: 10px;
+            padding: 0 15px;
             background: #007aff;
             color: white;
-            padding: 10px 14px;
-            font-weight: 650;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        /* =====================================================
+
+        /* =========================
            SEARCH
-        ===================================================== */
+        ========================= */
 
         .search-input-wrap {
             margin-bottom: 15px;
@@ -3216,28 +942,31 @@
 
         .search-input {
             width: 100%;
+            padding: 13px 14px;
             border: 1px solid #d2d2d7;
-            border-radius: 11px;
-            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
             outline: none;
         }
 
         .search-input:focus {
             border-color: #007aff;
             box-shadow:
-                0 0 0 3px rgba(0,122,255,.1);
+                0 0 0 3px rgba(0, 122, 255, 0.10);
         }
 
         .search-results {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .search-result {
             padding: 12px;
+            background: #f8f8fa;
             border-radius: 11px;
-            background: #f7f7f8;
             cursor: pointer;
         }
 
@@ -3246,66 +975,43 @@
         }
 
         .search-result-title {
-            font-weight: 650;
             font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .search-result-meta {
             color: #86868b;
-            font-size: 12px;
-            margin-top: 3px;
+            font-size: 11px;
         }
 
-        /* =====================================================
-           CLOUD STATUS
-        ===================================================== */
 
-        #cloudStatus {
-            position: fixed;
-            bottom: 14px;
-            right: 14px;
+        /* =========================
+           MOBILE RESPONSIVENESS
+        ========================= */
 
-            z-index: 9998;
-
-            background: rgba(255,255,255,.94);
-            backdrop-filter: blur(10px);
-
-            padding: 7px 11px;
-            border-radius: 20px;
-
-            font-size: 12px;
-            color: #86868b;
-
-            box-shadow:
-                0 3px 15px rgba(0,0,0,.08);
-        }
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
-        @media (max-width: 1050px) {
+        @media (max-width: 1000px) {
 
             .main-content {
                 grid-template-columns: 1fr;
             }
 
             .todo-area {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
+                order: 2;
             }
 
         }
 
-        @media (max-width: 750px) {
+
+        @media (max-width: 700px) {
 
             .page {
-                padding: 16px;
+                padding: 18px 12px 30px;
             }
 
             .header {
-                flex-direction: column;
                 align-items: flex-start;
+                flex-direction: column;
             }
 
             .header-actions {
@@ -3333,21 +1039,32 @@
 
             .calendar-tools {
                 justify-content: center;
-                flex-wrap: wrap;
             }
 
             .calendar-card {
                 overflow-x: auto;
-                padding: 10px;
             }
 
-            #calendar,
-            .weekdays {
+            .calendar-card-inner {
                 min-width: 650px;
             }
 
-            .todo-area {
+            .form-row {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .modal-footer-left,
+            .modal-footer-right {
+                width: 100%;
+            }
+
+            .modal-button {
+                flex: 1;
             }
 
             .category-row {
@@ -3358,2159 +1075,459 @@
                 display: none;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .modal-footer-left,
-            .modal-footer-right {
-                width: 100%;
-            }
-
-            .modal-button {
-                flex: 1;
-            }
-
         }
 
     </style>
-
 </head>
-
 
 <body>
 
-<div class="page">
+    <div class="page">
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+        <!-- HEADER -->
+        <header class="header">
 
-    <div class="header">
+            <h1>My Assignment Calendar</h1>
 
-        <h1>
-            My Assignment Calendar
-        </h1>
+            <div class="header-actions">
 
+                <button
+                    class="header-button"
+                    id="searchButton"
+                    type="button"
+                >
+                    🔎 Search
+                </button>
 
-        <div class="header-actions">
+                <button
+                    class="header-button"
+                    id="todayButton"
+                    type="button"
+                >
+                    Today
+                </button>
 
-            <button
-                class="header-button"
-                id="searchButton"
-            >
-                🔎 Search
-            </button>
+                <button
+                    class="header-button"
+                    id="categorySettingsButton"
+                    type="button"
+                >
+                    ⚙️ Categories
+                </button>
 
+                <button
+                    class="header-button"
+                    id="exportButton"
+                    type="button"
+                >
+                    ↓ Backup
+                </button>
 
-            <button
-                class="header-button"
-                id="todayButton"
-            >
-                Today
-            </button>
+                <button
+                    class="header-button"
+                    id="importButton"
+                    type="button"
+                >
+                    ↑ Restore
+                </button>
 
-
-            <button
-                class="header-button"
-                id="categorySettingsButton"
-            >
-                ⚙️ Categories
-            </button>
-
-
-            <button
-                class="header-button"
-                id="exportButton"
-            >
-                ↓ Backup
-            </button>
-
-
-            <button
-                class="header-button"
-                id="importButton"
-            >
-                ↑ Restore
-            </button>
-
-
-            <input
-                type="file"
-                id="importFile"
-                accept=".json"
-            >
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         WEEK SUMMARY
-    ====================================================== -->
-
-    <div class="week-summary">
-
-        <div>
-
-            <div class="week-summary-title">
-                THIS WEEK
-            </div>
-
-            <div class="week-summary-main">
-
-                <span id="weekProgressText">
-                    0% complete
-                </span>
+                <input
+                    type="file"
+                    id="importFile"
+                    accept=".json"
+                    hidden
+                >
 
             </div>
 
-            <div class="progress-bar">
+        </header>
+
+
+        <!-- WEEK SUMMARY -->
+        <section class="week-summary">
+
+            <div>
+
+                <div class="week-summary-title">
+                    THIS WEEK
+                </div>
 
                 <div
-                    class="progress-fill"
-                    id="weekProgressFill"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="week-stats">
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekTotal"
+                    class="week-summary-main"
+                    id="weekProgressText"
                 >
-                    0
-                </span>
+                    0% complete
+                </div>
 
-                <span class="week-stat-label">
-                    Assignments
-                </span>
+                <div class="progress-bar">
 
-            </div>
+                    <div
+                        class="progress-fill"
+                        id="weekProgressFill"
+                    ></div>
 
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekCompleted"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Completed
-                </span>
+                </div>
 
             </div>
 
 
-            <div class="week-stat">
+            <div class="week-stats">
 
-                <span
-                    class="week-stat-number"
-                    id="weekEvents"
-                >
-                    0
-                </span>
+                <div class="week-stat">
 
-                <span class="week-stat-label">
-                    Events
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <div class="main-content">
-
-
-        <!-- =================================================
-             CALENDAR
-        ================================================== -->
-
-        <div class="calendar-section">
-
-            <div class="calendar-header">
-
-                <div class="month-controls">
-
-                    <button
-                        class="month-button"
-                        id="previousMonth"
+                    <span
+                        class="week-stat-number"
+                        id="weekTotal"
                     >
-                        ‹
-                    </button>
+                        0
+                    </span>
 
-                    <span id="monthName"></span>
-
-                    <button
-                        class="month-button"
-                        id="nextMonth"
-                    >
-                        ›
-                    </button>
+                    <span class="week-stat-label">
+                        Assignments
+                    </span>
 
                 </div>
 
 
-                <div class="calendar-tools">
+                <div class="week-stat">
+
+                    <span
+                        class="week-stat-number"
+                        id="weekCompleted"
+                    >
+                        0
+                    </span>
+
+                    <span class="week-stat-label">
+                        Completed
+                    </span>
+
+                </div>
+
+
+                <div class="week-stat">
+
+                    <span
+                        class="week-stat-number"
+                        id="weekEvents"
+                    >
+                        0
+                    </span>
+
+                    <span class="week-stat-label">
+                        Events
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+
+            <!-- ONLY CALENDAR -->
+            <section class="calendar-section">
+
+                <div class="calendar-header">
+
+                    <div class="month-controls">
+
+                        <button
+                            class="month-button"
+                            id="previousMonth"
+                            type="button"
+                        >
+                            ←
+                        </button>
+
+                        <span id="monthName"></span>
+
+                        <button
+                            class="month-button"
+                            id="nextMonth"
+                            type="button"
+                        >
+                            →
+                        </button>
+
+                    </div>
+
+
+                    <div class="calendar-tools">
+
+                        <select
+                            class="calendar-tool"
+                            id="categoryFilter"
+                        >
+
+                            <option value="all">
+                                All Categories
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            class="calendar-tool add"
+                            id="addCalendarItem"
+                            type="button"
+                        >
+                            + Add to Day
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="calendar-card">
+
+                    <div class="calendar-card-inner">
+
+                        <div class="weekdays">
+
+                            <div class="weekday">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday">Sat</div>
+
+                        </div>
+
+
+                        <!-- THE ONE AND ONLY CALENDAR CONTAINER -->
+                        <div id="calendar"></div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- TODO AREA -->
+            <aside class="todo-area">
+
+
+                <!-- ASSIGNMENTS TO-DO -->
+                <section class="todo-card">
+
+                    <h2>Assignments</h2>
 
                     <select
-                        class="calendar-tool"
-                        id="categoryFilter"
+                        id="categorySelect"
+                        class="category-select"
                     ></select>
 
 
-                    <button
-                        class="calendar-tool add"
-                        id="addCalendarItem"
-                    >
-                        + Add
-                    </button>
+                    <div class="todo-input">
 
-                </div>
+                        <input
+                            type="text"
+                            id="todoInput"
+                            placeholder="Add an assignment..."
+                            autocomplete="off"
+                        >
 
-            </div>
+                        <button
+                            id="addTodo"
+                            type="button"
+                        >
+                            +
+                        </button>
 
-
-            <div class="calendar-card">
-
-                <div class="weekdays">
-
-                    <div class="weekday">
-                        Sun
                     </div>
 
-                    <div class="weekday">
-                        Mon
-                    </div>
-
-                    <div class="weekday">
-                        Tue
-                    </div>
-
-                    <div class="weekday">
-                        Wed
-                    </div>
-
-                    <div class="weekday">
-                        Thu
-                    </div>
-
-                    <div class="weekday">
-                        Fri
-                    </div>
-
-                    <div class="weekday">
-                        Sat
-                    </div>
-
-                </div>
-
-
-                <div id="calendar"></div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             TODO AREA
-        ================================================== -->
-
-        <div class="todo-area">
-
-
-            <div class="todo-card">
-
-                <h2>
-                    📚 Assignment To-Do
-                </h2>
-
-
-                <select
-                    id="categorySelect"
-                    class="category-select"
-                ></select>
-
-
-                <div class="todo-input">
-
-                    <input
-                        type="text"
-                        id="todoInput"
-                        placeholder="Add an assignment..."
-                        autocomplete="off"
-                    >
-
-                    <button id="addTodo">
-                        Add
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="todo-items"
-                    id="todoItems"
-                >
 
                     <div
-                        class="empty-message"
-                        id="emptyMessage"
-                    >
-                        No assignments yet.
+                        class="todo-items"
+                        id="todoItems"
+                    ></div>
+
+                </section>
+
+
+                <!-- GENERAL TO-DO -->
+                <section class="todo-card">
+
+                    <h2>General To-Do</h2>
+
+                    <div class="todo-input">
+
+                        <input
+                            type="text"
+                            id="generalTodoInput"
+                            placeholder="Add a to-do..."
+                            autocomplete="off"
+                        >
+
+                        <button
+                            id="addGeneralTodo"
+                            type="button"
+                        >
+                            +
+                        </button>
+
                     </div>
 
-                </div>
-
-            </div>
-
-
-            <div class="todo-card">
-
-                <h2>
-                    📝 General To-Do
-                </h2>
-
-
-                <div class="todo-input">
-
-                    <input
-                        type="text"
-                        id="generalTodoInput"
-                        placeholder="Add a task..."
-                        autocomplete="off"
-                    >
-
-                    <button id="addGeneralTodo">
-                        Add
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="todo-items"
-                    id="generalTodoItems"
-                >
 
                     <div
-                        class="empty-message"
-                        id="generalEmptyMessage"
-                    >
-                        No tasks yet.
-                    </div>
+                        class="todo-items"
+                        id="generalTodoItems"
+                    ></div>
 
-                </div>
+                </section>
 
-            </div>
+            </aside>
 
-        </div>
+        </main>
 
     </div>
 
-</div>
 
+    <!-- ASSIGNMENT MODAL -->
+    <div
+        class="modal-overlay hidden"
+        id="assignmentModal"
+    >
 
-<!-- =========================================================
-     ASSIGNMENT MODAL
-========================================================= -->
+        <div class="modal">
 
-<div
-    class="modal-overlay hidden"
-    id="assignmentModal"
->
+            <div class="modal-header">
 
-    <div class="modal">
+                <h2 id="assignmentModalTitle">
+                    Add Calendar Item
+                </h2>
 
-        <div class="modal-header">
+                <button
+                    class="close-modal"
+                    id="closeAssignmentModal"
+                    type="button"
+                >
+                    ×
+                </button>
 
-            <h2 id="assignmentModalTitle">
-                Add Calendar Item
-            </h2>
+            </div>
 
-            <button
-                class="close-modal"
-                id="closeAssignmentModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="assignmentTitle">
-                Title
-            </label>
-
-            <input
-                type="text"
-                id="assignmentTitle"
-                class="form-input"
-                placeholder="Assignment name"
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <div class="form-row">
 
             <div class="form-group">
 
-                <label for="assignmentDate">
-                    Due Date
+                <label for="assignmentTitle">
+                    TITLE
                 </label>
 
                 <input
-                    type="date"
-                    id="assignmentDate"
+                    type="text"
+                    id="assignmentTitle"
                     class="form-input"
+                    placeholder="e.g. Biology Test"
+                    maxlength="100"
                 >
 
             </div>
 
 
-            <div class="form-group">
+            <div class="form-row">
 
-                <label for="assignmentCategory">
-                    Category
-                </label>
+                <div class="form-group">
 
-                <select
-                    id="assignmentCategory"
-                    class="form-select"
-                ></select>
-
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="assignmentNotes">
-                Notes
-            </label>
-
-            <textarea
-                id="assignmentNotes"
-                class="form-textarea"
-                placeholder="Optional notes..."
-            ></textarea>
-
-        </div>
-
-
-        <div class="checkbox-row">
-
-            <input
-                type="checkbox"
-                id="showInTodo"
-                checked
-            >
-
-            <label for="showInTodo">
-                Show this item in the Assignment To-Do list
-            </label>
-
-        </div>
-
-
-        <div class="modal-footer">
-
-            <div class="modal-footer-left">
-
-                <button
-                    class="modal-button danger"
-                    id="deleteAssignmentButton"
-                    style="display:none;"
-                >
-                    Delete
-                </button>
-
-            </div>
-
-
-            <div class="modal-footer-right">
-
-                <button
-                    class="modal-button cancel"
-                    id="cancelAssignmentModal"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="modal-button primary"
-                    id="saveAssignmentButton"
-                >
-                    Save
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     CATEGORY MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="categoryModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2>
-                Categories
-            </h2>
-
-            <button
-                class="close-modal"
-                id="closeCategoryModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div
-            class="category-list"
-            id="categoryList"
-        ></div>
-
-
-        <div class="add-category-area">
-
-            <input
-                type="text"
-                class="new-category-name"
-                id="newCategoryName"
-                placeholder="New category"
-                maxlength="30"
-            >
-
-
-            <input
-                type="color"
-                class="new-category-color"
-                id="newCategoryColor"
-                value="#007aff"
-            >
-
-
-            <button
-                class="add-category-button"
-                id="addCategory"
-            >
-                Add
-            </button>
-
-        </div>
-
-
-        <div class="modal-footer">
-
-            <div></div>
-
-            <button
-                class="modal-button primary"
-                id="doneCategorySettings"
-            >
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SEARCH MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="searchModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2>
-                Search
-            </h2>
-
-            <button
-                class="close-modal"
-                id="closeSearchModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="search-input-wrap">
-
-            <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="Search assignments, events, or notes..."
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <div
-            class="search-results"
-            id="searchResults"
-        >
-
-            <div class="empty-message">
-                Start typing to search.
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script src="script.js"></script>
-
-</body>
-
-</html>        textarea {
-            font-family: inherit;
-        }
-
-        .page {
-            max-width: 1400px;
-            min-height: 100vh;
-            margin: 0 auto;
-            padding: 24px 30px 40px;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 18px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.8px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .header-button {
-            border: none;
-            background: white;
-            color: #1d1d1f;
-            padding: 10px 13px;
-            border-radius: 11px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow:
-                0 2px 10px
-                rgba(0, 0, 0, 0.07);
-            transition: 0.2s;
-        }
-
-        .header-button:hover {
-            background: #e9e9ed;
-            transform: translateY(-1px);
-        }
-
-        .header-button.primary {
-            background: #007aff;
-            color: white;
-        }
-
-        .header-button.primary:hover {
-            background: #0066d6;
-        }
-
-        /* =========================
-           WEEKLY DASHBOARD
-        ========================= */
-
-        .week-summary {
-            background: white;
-            border-radius: 18px;
-            padding: 15px 18px;
-            margin-bottom: 18px;
-            box-shadow:
-                0 5px 22px
-                rgba(0, 0, 0, 0.06);
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .week-summary-title {
-            font-size: 13px;
-            color: #86868b;
-            font-weight: 600;
-            margin-bottom: 7px;
-        }
-
-        .week-summary-main {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: #eeeeef;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 8px;
-            max-width: 500px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #34c759;
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }
-
-        .week-stats {
-            display: flex;
-            gap: 18px;
-            align-items: center;
-        }
-
-        .week-stat {
-            text-align: center;
-            min-width: 65px;
-        }
-
-        .week-stat-number {
-            display: block;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .week-stat-label {
-            display: block;
-            margin-top: 2px;
-            font-size: 11px;
-            color: #86868b;
-        }
-
-        /* =========================
-           MAIN CONTENT
-        ========================= */
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 7fr 3fr;
-            gap: 24px;
-            align-items: start;
-        }
-
-        .calendar-section {
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* =========================
-           CALENDAR HEADER
-        ========================= */
-
-        .calendar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
-
-        .month-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #monthName {
-            min-width: 150px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .month-button {
-            width: 38px;
-            height: 38px;
-            border: none;
-            border-radius: 50%;
-            background: white;
-            box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.08);
-            font-size: 19px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .month-button:hover {
-            background: #e9e9ed;
-            transform: scale(1.05);
-        }
-
-        .calendar-tools {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .calendar-tool {
-            border: none;
-            border-radius: 10px;
-            background: white;
-            padding: 8px 11px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.06);
-            transition: 0.2s;
-        }
-
-        .calendar-tool:hover {
-            background: #e9e9ed;
-        }
-
-        .calendar-tool.add {
-            background: #007aff;
-            color: white;
-        }
-
-        .calendar-tool.add:hover {
-            background: #0066d6;
-        }
-
-        /* =========================
-           CALENDAR
-        ========================= */
-
-        .calendar-card {
-            background: white;
-            border-radius: 22px;
-            padding: 16px;
-            box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.08);
-            height: auto;
-            min-height: 0;
-            overflow: visible;
-        }
-
-        .weekdays {
-            display: grid;
-            grid-template-columns:
-                repeat(7, minmax(0, 1fr));
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .weekday {
-            text-align: center;
-            color: #86868b;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px;
-        }
-
-        #calendar {
-            display: grid;
-            grid-template-columns:
-                repeat(7, minmax(0, 1fr));
-            grid-auto-rows: auto;
-            align-items: stretch;
-            gap: 8px;
-            width: 100%;
-            height: auto;
-            min-height: 560px;
-        }
-
-        /* =========================
-           DAY BOX
-        ========================= */
-
-        .day {
-            min-width: 0;
-            min-height: 100px;
-            height: auto;
-            align-self: stretch;
-            background: #f8f8fa;
-            border-radius: 14px;
-            padding: 10px;
-            border: 1px solid #eeeeef;
-            transition: 0.2s;
-            cursor: pointer;
-            overflow: visible;
-            word-break: break-word;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .day:hover {
-            background: #eef3f9;
-            transform: translateY(-2px);
-        }
-
-        .day-number {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            flex-shrink: 0;
-        }
-
-        .empty-day {
-            min-height: 100px;
-            height: auto;
-            background: transparent;
-            border: none;
-            pointer-events: none;
-        }
-
-        .today {
-            background: #e8f1ff;
-            border: 2px solid #007aff;
-        }
-
-        .today .day-number {
-            color: #007aff;
-        }
-
-        .day.selected {
-            border: 2px solid #007aff;
-            background: #eef6ff;
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-        /* =========================
-           ASSIGNMENTS ON CALENDAR
-        ========================= */
-
-        .assignment {
-            color: white;
-            border-radius: 8px;
-            padding: 6px 7px;
-            margin-top: 5px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            overflow: visible;
-            text-overflow: clip;
-            white-space: normal;
-            transition: 0.15s;
-            display: block;
-            width: 100%;
-            min-height: 0;
-            flex-shrink: 0;
-            line-height: 1.3;
-            word-break: break-word;
-        }
-
-        .assignment:hover {
-            transform: translateY(-1px);
-            filter: brightness(0.94);
-        }
-
-        .assignment.completed {
-            opacity: 0.30;
-            text-decoration: line-through;
-        }
-
-        .assignment.calendar-only {
-            box-shadow:
-                inset 0 0 0 1px
-                rgba(255,255,255,0.5);
-        }
-
-        .assignment.calendar-only::before {
-            content: "• ";
-            opacity: 0.85;
-        }
-
-        /* =========================
-           TODO AREA
-        ========================= */
-
-        .todo-area {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .todo-card {
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.08);
-            height: auto;
-            min-height: 0;
-        }
-
-        .todo-card h2 {
-            margin: 0 0 14px 0;
-            font-size: 21px;
-            letter-spacing: -0.4px;
-        }
-
-        /* =========================
-           ASSIGNMENT DATE INPUT
-        ========================= */
-
-        .assignment-date-input {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .assignment-date-input input,
-        .assignment-date-input select {
-            width: 100%;
-            padding: 10px 11px;
-            border: 1px solid #d2d2d7;
-            border-radius: 10px;
-            background: white;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .assignment-date-input input:focus,
-        .assignment-date-input select:focus {
-            border-color: #007aff;
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-        .todo-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .todo-input input {
-            flex: 1;
-            min-width: 0;
-            padding: 11px 12px;
-            border: 1px solid #d2d2d7;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .todo-input input:focus {
-            border-color: #007aff;
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.12);
-        }
-
-        .todo-input button {
-            width: 42px;
-            height: 42px;
-            border: none;
-            border-radius: 10px;
-            background: #007aff;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .todo-input button:hover {
-            background: #0066d6;
-            transform: scale(1.03);
-        }
-
-        .category-select {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px 12px;
-            border: 1px solid #d2d2d7;
-            border-radius: 10px;
-            background: white;
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .category-select:focus {
-            border-color: #007aff;
-        }
-
-
-        /* =====================================================
-           TODO LIST SCROLLING
-           
-           SHOWS ABOUT 7 ITEMS.
-           WHEN THERE ARE MORE THAN 7,
-           THE LIST SCROLLS INSIDE THE CARD.
-           
-           THIS APPLIES TO BOTH:
-           - Assignments
-           - General To-Do
-        ===================================================== */
-
-        .todo-items {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-
-            width: 100%;
-
-            /*
-                About seven normal-sized
-                todo items can be seen.
-            */
-
-            max-height: 376px;
-
-            /*
-                Once there are more than
-                approximately seven items,
-                scroll inside this area.
-            */
-
-            overflow-y: auto;
-
-            overflow-x: hidden;
-
-            height: auto;
-
-            min-height: 0;
-
-            padding-right: 3px;
-
-            /*
-                Keeps the scrollbar from
-                appearing when unnecessary.
-            */
-
-            scrollbar-width: thin;
-
-            scrollbar-color:
-                #c7c7cc
-                transparent;
-        }
-
-
-        /*
-            Safari / Chrome scrollbar
-        */
-
-        .todo-items::-webkit-scrollbar {
-            width: 7px;
-        }
-
-
-        .todo-items::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-
-        .todo-items::-webkit-scrollbar-thumb {
-            background: #c7c7cc;
-            border-radius: 999px;
-        }
-
-
-        .todo-items::-webkit-scrollbar-thumb:hover {
-            background: #a8a8ad;
-        }
-
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 11px;
-            background: #f8f8fa;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.2s;
-            min-height: 40px;
-            height: auto;
-            flex-shrink: 0;
-        }
-
-        .todo-item:hover {
-            background: #f0f0f3;
-        }
-
-        .todo-item.selected-todo {
-            border-color: #007aff;
-            background: #eef6ff;
-        }
-
-        .todo-item input[type="checkbox"] {
-            width: 17px;
-            height: 17px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .todo-item-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .todo-item-title {
-            font-size: 14px;
-            line-height: 1.35;
-            word-break: break-word;
-        }
-
-        .todo-item-date {
-            color: #86868b;
-            font-size: 11px;
-            margin-top: 3px;
-        }
-
-        .todo-item span {
-            min-width: 0;
-        }
-
-        .delete-todo {
-            border: none;
-            background: transparent;
-            color: #86868b;
-            font-size: 16px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .delete-todo:hover {
-            color: #ff3b30;
-        }
-
-        .category-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .no-category-dot {
-            background: #c7c7cc;
-            border: 1px solid #b5b5ba;
-        }
-
-        .empty-message {
-            color: #86868b;
-            font-size: 13px;
-            text-align: center;
-            padding: 16px 5px;
-        }
-
-        /* =========================
-           MODAL
-        ========================= */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background:
-                rgba(0, 0, 0, 0.35);
-            backdrop-filter:
-                blur(8px);
-            -webkit-backdrop-filter:
-                blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
-
-        .modal {
-            width: 100%;
-            max-width: 560px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: white;
-            border-radius: 24px;
-            padding: 26px;
-            box-shadow:
-                0 25px 70px
-                rgba(0, 0, 0, 0.22);
-            animation:
-                modalIn 0.2s ease-out;
-        }
-
-        @keyframes modalIn {
-
-            from {
-                opacity: 0;
-                transform:
-                    scale(0.96)
-                    translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform:
-                    scale(1)
-                    translateY(0);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .close-modal {
-            width: 34px;
-            height: 34px;
-            border: none;
-            border-radius: 50%;
-            background: #f1f1f3;
-            color: #555;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .close-modal:hover {
-            background: #e4e4e7;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #6e6e73;
-        }
-
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #d2d2d7;
-            border-radius: 10px;
-            background: white;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .form-textarea {
-            min-height: 110px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            border-color: #007aff;
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns:
-                1fr 1fr;
-            gap: 12px;
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            background: #f8f8fa;
-            border-radius: 11px;
-        }
-
-        .checkbox-row input {
-            width: 18px;
-            height: 18px;
-        }
-
-        .checkbox-row label {
-            margin: 0;
-            color: #1d1d1f;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-top: 22px;
-        }
-
-        .modal-footer-left,
-        .modal-footer-right {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .modal-button {
-            border: none;
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .modal-button.cancel {
-            background: #f1f1f3;
-            color: #1d1d1f;
-        }
-
-        .modal-button.primary {
-            background: #007aff;
-            color: white;
-        }
-
-        .modal-button.danger {
-            background: #fff0ef;
-            color: #ff3b30;
-        }
-
-        .modal-button.success {
-            background: #e8f8ed;
-            color: #248a3d;
-        }
-
-        /* =========================
-           CATEGORY MODAL
-        ========================= */
-
-        .category-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .category-row {
-            display: grid;
-            grid-template-columns:
-                38px 1fr 50px 40px;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f8f8fa;
-            border-radius: 12px;
-        }
-
-        .category-color {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            border: none;
-            border-radius: 9px;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .category-name-input {
-            width: 100%;
-            padding: 9px 10px;
-            border: 1px solid #d2d2d7;
-            border-radius: 9px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .category-color-preview {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 1px solid
-                rgba(0, 0, 0, 0.08);
-        }
-
-        .delete-category {
-            width: 34px;
-            height: 34px;
-            border: none;
-            background: transparent;
-            color: #86868b;
-            border-radius: 8px;
-            font-size: 17px;
-            cursor: pointer;
-        }
-
-        .delete-category:hover {
-            color: #ff3b30;
-            background: #fff0ef;
-        }
-
-        .add-category-area {
-            display: flex;
-            gap: 8px;
-            padding-top: 16px;
-            border-top:
-                1px solid #eeeeef;
-        }
-
-        .new-category-name {
-            flex: 1;
-            min-width: 0;
-            padding: 10px 12px;
-            border: 1px solid #d2d2d7;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .new-category-color {
-            width: 44px;
-            height: 42px;
-            border: none;
-            padding: 3px;
-            border-radius: 10px;
-            background: #f1f1f3;
-            cursor: pointer;
-        }
-
-        .add-category-button {
-            border: none;
-            border-radius: 10px;
-            padding: 0 15px;
-            background: #007aff;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* =========================
-           SEARCH MODAL
-        ========================= */
-
-        .search-input-wrap {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #d2d2d7;
-            border-radius: 12px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .search-input:focus {
-            border-color: #007aff;
-            box-shadow:
-                0 0 0 3px
-                rgba(0, 122, 255, 0.10);
-        }
-
-        .search-results {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .search-result {
-            padding: 12px;
-            background: #f8f8fa;
-            border-radius: 11px;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-
-        .search-result:hover {
-            background: #eef3f9;
-        }
-
-        .search-result-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .search-result-meta {
-            color: #86868b;
-            font-size: 11px;
-        }
-
-        /* =========================
-           IMPORT
-        ========================= */
-
-        #importFile {
-            display: none;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1000px) {
-
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            .calendar-card {
-                min-height: 0;
-                height: auto;
-            }
-
-            .todo-area {
-                order: 2;
-            }
-        }
-
-        @media (max-width: 700px) {
-
-            .page {
-                padding: 18px 12px 30px;
-            }
-
-            .header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .header-actions {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            h1 {
-                font-size: 27px;
-            }
-
-            .week-summary {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .week-stats {
-                justify-content: space-around;
-            }
-
-            .calendar-header {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .calendar-tools {
-                justify-content: center;
-            }
-
-            .calendar-card {
-                overflow-x: auto;
-                padding: 10px;
-            }
-
-            #calendar,
-            .weekdays {
-                min-width: 650px;
-            }
-
-            #calendar {
-                height: auto;
-                min-height: 560px;
-                grid-auto-rows: auto;
-            }
-
-            .category-row {
-                grid-template-columns:
-                    38px 1fr 40px;
-            }
-
-            .category-color-preview {
-                display: none;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .assignment-date-input {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .modal-footer-left,
-            .modal-footer-right {
-                width: 100%;
-            }
-
-            .modal-button {
-                flex: 1;
-            }
-
-            /*
-                Keep the same seven-item
-                scrolling behavior on mobile.
-            */
-
-            .todo-items {
-                max-height: 376px;
-                overflow-y: auto;
-            }
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="page">
-
-    <div class="header">
-
-        <h1>
-            My Assignment Calendar
-        </h1>
-
-        <div class="header-actions">
-
-            <button
-                class="header-button"
-                id="searchButton"
-            >
-                🔎 Search
-            </button>
-
-            <button
-                class="header-button"
-                id="todayButton"
-            >
-                Today
-            </button>
-
-            <button
-                class="header-button"
-                id="categorySettingsButton"
-            >
-                ⚙️ Categories
-            </button>
-
-            <button
-                class="header-button"
-                id="exportButton"
-            >
-                ↓ Backup
-            </button>
-
-            <button
-                class="header-button"
-                id="importButton"
-            >
-                ↑ Restore
-            </button>
-
-            <input
-                type="file"
-                id="importFile"
-                accept=".json"
-            >
-
-        </div>
-
-    </div>
-
-
-    <!-- WEEKLY DASHBOARD -->
-
-    <div class="week-summary">
-
-        <div>
-
-            <div class="week-summary-title">
-                THIS WEEK
-            </div>
-
-            <div class="week-summary-main">
-
-                <span id="weekProgressText">
-                    0% complete
-                </span>
-
-            </div>
-
-            <div class="progress-bar">
-
-                <div
-                    class="progress-fill"
-                    id="weekProgressFill"
-                ></div>
-
-            </div>
-
-        </div>
-
-        <div class="week-stats">
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekTotal"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Assignments
-                </span>
-
-            </div>
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekCompleted"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Completed
-                </span>
-
-            </div>
-
-            <div class="week-stat">
-
-                <span
-                    class="week-stat-number"
-                    id="weekEvents"
-                >
-                    0
-                </span>
-
-                <span class="week-stat-label">
-                    Events
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- MAIN -->
-
-    <div class="main-content">
-
-
-        <!-- CALENDAR -->
-
-        <div class="calendar-section">
-
-            <div class="calendar-header">
-
-                <div class="month-controls">
-
-                    <button
-                        class="month-button"
-                        id="previousMonth"
-                    >
-                        ←
-                    </button>
-
-                    <span id="monthName"></span>
-
-                    <button
-                        class="month-button"
-                        id="nextMonth"
-                    >
-                        →
-                    </button>
-
-                </div>
-
-                <div class="calendar-tools">
-
-                    <select
-                        class="calendar-tool"
-                        id="categoryFilter"
-                    >
-
-                        <option value="all">
-                            All Categories
-                        </option>
-
-                    </select>
-
-                    <button
-                        class="calendar-tool add"
-                        id="addCalendarItem"
-                    >
-                        + Add to Day
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div class="calendar-card">
-
-                <div class="weekdays">
-
-                    <div class="weekday">Sun</div>
-                    <div class="weekday">Mon</div>
-                    <div class="weekday">Tue</div>
-                    <div class="weekday">Wed</div>
-                    <div class="weekday">Thu</div>
-                    <div class="weekday">Fri</div>
-                    <div class="weekday">Sat</div>
-
-                </div>
-
-                <div id="calendar"></div>
-
-            </div>
-
-        </div>
-
-
-        <!-- TODO AREA -->
-
-        <div class="todo-area">
-
-            <!-- ASSIGNMENTS -->
-
-            <div class="todo-card">
-
-                <h2>
-                    Assignments
-                </h2>
-
-                <select
-                    id="categorySelect"
-                    class="category-select"
-                >
-                </select>
-
-
-                <div class="assignment-date-input">
+                    <label for="assignmentDate">
+                        DATE
+                    </label>
 
                     <input
                         type="date"
-                        id="todoDate"
+                        id="assignmentDate"
+                        class="form-input"
                     >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="assignmentCategory">
+                        CATEGORY
+                    </label>
 
                     <select
-                        id="todoDateQuick"
-                    >
-
-                        <option value="">
-                            Choose date...
-                        </option>
-
-                        <option value="today">
-                            Today
-                        </option>
-
-                        <option value="tomorrow">
-                            Tomorrow
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="todo-input">
-
-                    <input
-                        type="text"
-                        id="todoInput"
-                        placeholder="Add an assignment..."
-                        autocomplete="off"
-                    >
-
-                    <button
-                        id="addTodo"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <!--
-                    THIS LIST NOW SCROLLS AFTER
-                    ABOUT 7 ASSIGNMENTS.
-                -->
-
-                <div
-                    class="todo-items"
-                    id="todoItems"
-                >
-
-                    <div
-                        class="empty-message"
-                        id="emptyMessage"
-                    >
-                        No assignments yet.
-                    </div>
+                        id="assignmentCategory"
+                        class="form-select"
+                    ></select>
 
                 </div>
 
             </div>
 
 
-            <!-- GENERAL TODO -->
+            <div class="form-group">
 
-            <div class="todo-card">
+                <label for="assignmentNotes">
+                    NOTES
+                </label>
 
-                <h2>
-                    General To-Do
-                </h2>
+                <textarea
+                    id="assignmentNotes"
+                    class="form-textarea"
+                    placeholder="Add any details, study notes, instructions, etc."
+                ></textarea>
 
-                <div class="todo-input">
+            </div>
 
-                    <input
-                        type="text"
-                        id="generalTodoInput"
-                        placeholder="Add a to-do..."
-                        autocomplete="off"
-                    >
+
+            <div class="checkbox-row">
+
+                <input
+                    type="checkbox"
+                    id="showInTodo"
+                    checked
+                >
+
+                <label for="showInTodo">
+                    Show this item in my Assignments to-do list
+                </label>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <div class="modal-footer-left">
 
                     <button
-                        id="addGeneralTodo"
+                        class="modal-button danger"
+                        id="deleteAssignmentButton"
+                        type="button"
                     >
-                        +
+                        Delete
                     </button>
 
                 </div>
 
 
-                <!--
-                    THIS LIST ALSO SCROLLS AFTER
-                    ABOUT 7 TO-DOS.
-                -->
+                <div class="modal-footer-right">
 
-                <div
-                    class="todo-items"
-                    id="generalTodoItems"
-                >
-
-                    <div
-                        class="empty-message"
-                        id="generalEmptyMessage"
+                    <button
+                        class="modal-button cancel"
+                        id="cancelAssignmentModal"
+                        type="button"
                     >
-                        No general to-dos yet.
-                    </div>
+                        Cancel
+                    </button>
+
+                    <button
+                        class="modal-button primary"
+                        id="saveAssignmentButton"
+                        type="button"
+                    >
+                        Save
+                    </button>
 
                 </div>
 
@@ -5520,138 +1537,74 @@
 
     </div>
 
-</div>
+
+    <!-- CATEGORY MODAL -->
+    <div
+        class="modal-overlay hidden"
+        id="categoryModal"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <h2>Categories</h2>
+
+                <button
+                    class="close-modal"
+                    id="closeCategoryModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
 
 
-<!-- =========================================================
-     ASSIGNMENT MODAL
-========================================================= -->
+            <div
+                class="category-list"
+                id="categoryList"
+            ></div>
 
-<div
-    class="modal-overlay hidden"
-    id="assignmentModal"
->
 
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2 id="assignmentModalTitle">
-                Add Calendar Item
-            </h2>
-
-            <button
-                class="close-modal"
-                id="closeAssignmentModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="assignmentTitle">
-                TITLE
-            </label>
-
-            <input
-                type="text"
-                id="assignmentTitle"
-                class="form-input"
-                placeholder="e.g. Biology Test"
-                maxlength="100"
-            >
-
-        </div>
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label for="assignmentDate">
-                    DATE
-                </label>
+            <div class="add-category-area">
 
                 <input
-                    type="date"
-                    id="assignmentDate"
-                    class="form-input"
+                    type="text"
+                    class="new-category-name"
+                    id="newCategoryName"
+                    placeholder="New category name..."
+                    maxlength="30"
                 >
 
-            </div>
-
-            <div class="form-group">
-
-                <label for="assignmentCategory">
-                    CATEGORY
-                </label>
-
-                <select
-                    id="assignmentCategory"
-                    class="form-select"
+                <input
+                    type="color"
+                    class="new-category-color"
+                    id="newCategoryColor"
+                    value="#007aff"
                 >
-                </select>
-
-            </div>
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="assignmentNotes">
-                NOTES
-            </label>
-
-            <textarea
-                id="assignmentNotes"
-                class="form-textarea"
-                placeholder="Add any details, study notes, instructions, etc."
-            ></textarea>
-
-        </div>
-
-        <div class="checkbox-row">
-
-            <input
-                type="checkbox"
-                id="showInTodo"
-                checked
-            >
-
-            <label for="showInTodo">
-                Show this item in my Assignments to-do list
-            </label>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <div class="modal-footer-left">
 
                 <button
-                    class="modal-button danger"
-                    id="deleteAssignmentButton"
+                    class="add-category-button"
+                    id="addCategory"
+                    type="button"
                 >
-                    Delete
+                    Add
                 </button>
 
             </div>
 
-            <div class="modal-footer-right">
 
-                <button
-                    class="modal-button cancel"
-                    id="cancelAssignmentModal"
-                >
-                    Cancel
-                </button>
+            <div class="modal-footer">
+
+                <div></div>
 
                 <button
                     class="modal-button primary"
-                    id="saveAssignmentButton"
+                    id="doneCategorySettings"
+                    type="button"
                 >
-                    Save
+                    Done
                 </button>
 
             </div>
@@ -5660,140 +1613,54 @@
 
     </div>
 
-</div>
 
+    <!-- SEARCH MODAL -->
+    <div
+        class="modal-overlay hidden"
+        id="searchModal"
+    >
 
-<!-- =========================================================
-     CATEGORY MODAL
-========================================================= -->
+        <div class="modal">
 
-<div
-    class="modal-overlay hidden"
-    id="categoryModal"
->
+            <div class="modal-header">
 
-    <div class="modal">
+                <h2>Search</h2>
 
-        <div class="modal-header">
+                <button
+                    class="close-modal"
+                    id="closeSearchModal"
+                    type="button"
+                >
+                    ×
+                </button>
 
-            <h2>
-                Categories
-            </h2>
-
-            <button
-                class="close-modal"
-                id="closeCategoryModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <div
-            class="category-list"
-            id="categoryList"
-        >
-        </div>
-
-        <div class="add-category-area">
-
-            <input
-                type="text"
-                class="new-category-name"
-                id="newCategoryName"
-                placeholder="New category name..."
-                maxlength="30"
-            >
-
-            <input
-                type="color"
-                class="new-category-color"
-                id="newCategoryColor"
-                value="#007aff"
-            >
-
-            <button
-                class="add-category-button"
-                id="addCategory"
-            >
-                Add
-            </button>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <div></div>
-
-            <button
-                class="modal-button primary"
-                id="doneCategorySettings"
-            >
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SEARCH MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay hidden"
-    id="searchModal"
->
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <h2>
-                Search
-            </h2>
-
-            <button
-                class="close-modal"
-                id="closeSearchModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <div class="search-input-wrap">
-
-            <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="Search assignments, events, or notes..."
-                autocomplete="off"
-            >
-
-        </div>
-
-        <div
-            class="search-results"
-            id="searchResults"
-        >
-
-            <div class="empty-message">
-                Start typing to search.
             </div>
 
+
+            <div class="search-input-wrap">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search assignments, events, or notes..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                class="search-results"
+                id="searchResults"
+            ></div>
+
         </div>
 
     </div>
 
-</div>
 
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 
