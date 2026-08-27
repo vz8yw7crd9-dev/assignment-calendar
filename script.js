@@ -7,16 +7,6 @@
 // ============================================================
 // SUPABASE CONNECTION
 // ============================================================
-//
-// PASTE YOUR VALUES INSIDE THE QUOTATION MARKS.
-//
-// Example:
-//
-// const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
-// const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
-//
-// NEVER put your Supabase password or secret key here.
-// ============================================================
 
 const SUPABASE_URL =
     "https://upzwzjrvqjlniltkofix.supabase.co";
@@ -1006,9 +996,6 @@ async function loadCloudData() {
 
         } else {
 
-            // First device:
-            // upload the existing local planner.
-
             await saveCloudData();
 
         }
@@ -1303,6 +1290,122 @@ function formatDate(
             year: "numeric"
         }
     );
+}
+
+
+// ============================================================
+// TODO DATE SORTING
+// ============================================================
+//
+// This function sorts assignments by their due date.
+//
+// Because the dates are stored as YYYY-MM-DD,
+// they can be safely compared as strings.
+//
+// Example:
+//
+// 2026-08-28
+// 2026-09-03
+//
+// August 28 will always come before September 3.
+//
+// Assignments with NO date are placed at the bottom.
+// If two assignments have the same date, their existing
+// order is preserved.
+// ============================================================
+
+function sortAssignmentsByDueDate(
+    assignmentList
+) {
+
+    return assignmentList
+        .map(
+            (
+                assignment,
+                originalIndex
+            ) => ({
+
+                assignment:
+                    assignment,
+
+                originalIndex:
+                    originalIndex
+
+            })
+        )
+        .sort(
+            (
+                a,
+                b
+            ) => {
+
+                const dateA =
+                    a.assignment.date ||
+                    "";
+
+                const dateB =
+                    b.assignment.date ||
+                    "";
+
+
+                // Assignments without dates
+                // go to the bottom.
+
+                if (
+                    !dateA &&
+                    !dateB
+                ) {
+
+                    return (
+                        a.originalIndex -
+                        b.originalIndex
+                    );
+                }
+
+
+                if (!dateA) {
+                    return 1;
+                }
+
+
+                if (!dateB) {
+                    return -1;
+                }
+
+
+                // Earlier due date first.
+
+                if (
+                    dateA <
+                    dateB
+                ) {
+
+                    return -1;
+                }
+
+
+                if (
+                    dateA >
+                    dateB
+                ) {
+
+                    return 1;
+                }
+
+
+                // Same date:
+                // keep original order.
+
+                return (
+                    a.originalIndex -
+                    b.originalIndex
+                );
+            }
+        )
+        .map(
+            item =>
+                item.assignment
+        );
 }
 
 
@@ -2141,8 +2244,35 @@ function renderTodoList() {
         );
 
 
+    // ========================================================
+    // SORT TODO LIST BY DUE DATE
+    // ========================================================
+    //
+    // This is the important part.
+    //
+    // The assignments are sorted by assignment.date,
+    // NOT by the order they were added.
+    //
+    // Example:
+    //
+    // Added first: September 3
+    // Added second: August 28
+    //
+    // The list becomes:
+    //
+    // August 28
+    // September 3
+    //
+    // ========================================================
+
+    const sortedAssignments =
+        sortAssignmentsByDueDate(
+            activeAssignments
+        );
+
+
     if (
-        activeAssignments.length === 0
+        sortedAssignments.length === 0
     ) {
 
         emptyMessage.style.display =
@@ -2160,7 +2290,7 @@ function renderTodoList() {
         "none";
 
 
-    activeAssignments.forEach(
+    sortedAssignments.forEach(
         assignment => {
 
             const item =
