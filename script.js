@@ -196,6 +196,7 @@ function loadAssignments() {
 
                 showInTodo:
                     item.showInTodo !== false
+
             };
 
         });
@@ -1023,18 +1024,6 @@ async function loadCloudData() {
         );
 
 
-        setTimeout(
-            () => {
-
-                showCloudStatus(
-                    "☁️ Synced"
-                );
-
-            },
-            1500
-        );
-
-
     } catch (error) {
 
         console.error(
@@ -1121,25 +1110,25 @@ async function saveCloudData() {
         const {
             error
         } =
-        await supabaseClient
-            .from("calendar_data")
-            .upsert(
-                {
-                    user_id:
-                        currentUser.id,
+            await supabaseClient
+                .from("calendar_data")
+                .upsert(
+                    {
+                        user_id:
+                            currentUser.id,
 
-                    data:
-                        getPlannerData(),
+                        data:
+                            getPlannerData(),
 
-                    updated_at:
-                        new Date().toISOString()
+                        updated_at:
+                            new Date().toISOString()
 
-                },
-                {
-                    onConflict:
-                        "user_id"
-                }
-            );
+                    },
+                    {
+                        onConflict:
+                            "user_id"
+                    }
+                );
 
 
         if (error) {
@@ -1294,118 +1283,115 @@ function formatDate(
 
 
 // ============================================================
-// TODO DATE SORTING
+// TODO SORTING
 // ============================================================
 //
-// This function sorts assignments by their due date.
+// IMPORTANT:
 //
-// Because the dates are stored as YYYY-MM-DD,
-// they can be safely compared as strings.
+// The To-Do list is ALWAYS sorted by the calendar date.
+//
+// It does NOT matter what order assignments were added.
 //
 // Example:
 //
-// 2026-08-28
-// 2026-09-03
+// Added:
+// September 10
+// August 28
+// September 3
+// August 25
 //
-// August 28 will always come before September 3.
+// To-Do list:
 //
-// Assignments with NO date are placed at the bottom.
-// If two assignments have the same date, their existing
-// order is preserved.
+// August 25
+// August 28
+// September 3
+// September 10
+//
+// Assignments without a date are placed at the bottom.
+//
+// Assignments with the same due date stay in their
+// original order.
 // ============================================================
 
 function sortAssignmentsByDueDate(
     assignmentList
 ) {
 
-    return assignmentList
-        .map(
-            (
-                assignment,
-                originalIndex
-            ) => ({
+    return [...assignmentList].sort(
+        (a, b) => {
 
-                assignment:
-                    assignment,
+            const dateA =
+                typeof a.date === "string"
+                    ? a.date.trim()
+                    : "";
 
-                originalIndex:
-                    originalIndex
-
-            })
-        )
-        .sort(
-            (
-                a,
-                b
-            ) => {
-
-                const dateA =
-                    a.assignment.date ||
-                    "";
-
-                const dateB =
-                    b.assignment.date ||
-                    "";
+            const dateB =
+                typeof b.date === "string"
+                    ? b.date.trim()
+                    : "";
 
 
-                // Assignments without dates
-                // go to the bottom.
+            // ------------------------------------------------
+            // No date
+            // ------------------------------------------------
 
-                if (
-                    !dateA &&
-                    !dateB
-                ) {
-
-                    return (
-                        a.originalIndex -
-                        b.originalIndex
-                    );
-                }
-
-
-                if (!dateA) {
-                    return 1;
-                }
-
-
-                if (!dateB) {
-                    return -1;
-                }
-
-
-                // Earlier due date first.
-
-                if (
-                    dateA <
-                    dateB
-                ) {
-
-                    return -1;
-                }
-
-
-                if (
-                    dateA >
-                    dateB
-                ) {
-
-                    return 1;
-                }
-
-
-                // Same date:
-                // keep original order.
-
-                return (
-                    a.originalIndex -
-                    b.originalIndex
-                );
+            if (!dateA && !dateB) {
+                return 0;
             }
-        )
-        .map(
-            item =>
-                item.assignment
-        );
+
+
+            if (!dateA) {
+                return 1;
+            }
+
+
+            if (!dateB) {
+                return -1;
+            }
+
+
+            // ------------------------------------------------
+            // Compare actual calendar dates
+            // ------------------------------------------------
+
+            const timeA =
+                new Date(
+                    `${dateA}T00:00:00`
+                ).getTime();
+
+            const timeB =
+                new Date(
+                    `${dateB}T00:00:00`
+                ).getTime();
+
+
+            // If both dates are valid,
+            // earlier date comes first.
+
+            if (
+                !Number.isNaN(timeA) &&
+                !Number.isNaN(timeB)
+            ) {
+
+                return timeA - timeB;
+            }
+
+
+            // ------------------------------------------------
+            // Fallback for unusual date values
+            // ------------------------------------------------
+
+            if (dateA < dateB) {
+                return -1;
+            }
+
+            if (dateA > dateB) {
+                return 1;
+            }
+
+            return 0;
+        }
+    );
 }
 
 
@@ -1456,7 +1442,8 @@ function getCategoryName(
 
 function renderCategorySelect() {
 
-    categorySelect.innerHTML = "";
+    categorySelect.innerHTML =
+        "";
 
 
     const none =
@@ -1499,7 +1486,8 @@ function renderCategorySelect() {
 
 function renderCategoryFilter() {
 
-    categoryFilter.innerHTML = "";
+    categoryFilter.innerHTML =
+        "";
 
 
     const all =
@@ -2231,6 +2219,11 @@ function renderTodoList() {
         "";
 
 
+    // --------------------------------------------------------
+    // FIRST:
+    // Get ONLY assignments that should appear in the To-Do list.
+    // --------------------------------------------------------
+
     const activeAssignments =
         assignments.filter(
             assignment => {
@@ -2244,32 +2237,25 @@ function renderTodoList() {
         );
 
 
-    // ========================================================
-    // SORT TODO LIST BY DUE DATE
-    // ========================================================
+    // --------------------------------------------------------
+    // SECOND:
+    // SORT THEM BY THEIR CALENDAR DATE.
     //
-    // This is the important part.
+    // THIS IS THE IMPORTANT PART.
     //
-    // The assignments are sorted by assignment.date,
-    // NOT by the order they were added.
-    //
-    // Example:
-    //
-    // Added first: September 3
-    // Added second: August 28
-    //
-    // The list becomes:
-    //
-    // August 28
-    // September 3
-    //
-    // ========================================================
+    // The order the assignments were added DOES NOT MATTER.
+    // --------------------------------------------------------
 
     const sortedAssignments =
         sortAssignmentsByDueDate(
             activeAssignments
         );
 
+
+    // --------------------------------------------------------
+    // THIRD:
+    // Show empty message if there are no assignments.
+    // --------------------------------------------------------
 
     if (
         sortedAssignments.length === 0
@@ -2289,6 +2275,11 @@ function renderTodoList() {
     emptyMessage.style.display =
         "none";
 
+
+    // --------------------------------------------------------
+    // FOURTH:
+    // Build the To-Do list using THE SORTED ARRAY.
+    // --------------------------------------------------------
 
     sortedAssignments.forEach(
         assignment => {
@@ -2501,6 +2492,9 @@ function addTodo() {
     todoInput.value =
         "";
 
+
+    // renderTodoList() automatically sorts
+    // everything by calendar date.
 
     renderTodoList();
 
